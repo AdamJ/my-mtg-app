@@ -33,6 +33,18 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+      'no-unused-vars': ['warn', { // Or 'off' to completely disable
+        vars: 'all', // Check all variables
+        args: 'after-used', // Check arguments after they are used
+        ignoreRestSiblings: true, // Ignore ...rest siblings
+        caughtErrors: 'none', // Do not check for unused caught errors
+        // The following is the crucial part for your question:
+        varsIgnorePattern: 'React', // Ignore variables matching this regex (case-sensitive)
+      }],
     },
+    ignores: [
+      'node_modules',
+      'dist'
+    ],
   },
 ]

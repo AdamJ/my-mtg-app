@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { styled } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Switch from '@mui/material/Switch';
 import FormGroup from '@mui/material/FormGroup';
@@ -11,12 +10,6 @@ import CardListCreator from './components/CardListCreator';
 import InformationPage from './components/InformationPage';
 import InfoIcon from '@mui/icons-material/Info';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-
-const theme = createTheme({
-  colorSchemes: {
-    dark: true,
-  },
-});
 
 function App() {
 

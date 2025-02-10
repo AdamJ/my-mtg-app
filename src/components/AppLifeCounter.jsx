@@ -1,11 +1,11 @@
 // App.js
 import React, { useState, useEffect } from 'react';
-import { Alert, AlertTitle, Box, Container, Typography, TextField, Button, Grid2, Paper, IconButton, Select, Stack, MenuItem, FormControl, InputLabel, Chip, Fab, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
+import { Box, Container, Typography, TextField, Button, Grid2, Paper, IconButton, Stack, Fab, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { AccountCircle, Edit, Delete } from '@mui/icons-material'; // Import icons
+import { Edit, Delete } from '@mui/icons-material'; // Import icons
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 // In your main App.jsx or another component:
 function AppLifeCounter() {

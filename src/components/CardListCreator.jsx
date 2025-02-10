@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Select, MenuItem, InputLabel, Fab, FormControl, Typography, Paper, Checkbox, FormGroup, FormControlLabel } from '@mui/material';
+import { TextField, Button, Grid2, Select, MenuItem, InputLabel, Fab, FormControl, Typography, Paper, Checkbox, FormGroup, FormControlLabel } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { saveAs } from 'file-saver'; // Install: npm install file-saver
 
@@ -87,8 +87,8 @@ const CardListCreator = () => {
     return (
         <Paper elevation={3} sx={{ padding: 3, marginTop: 4 }}>
             <Typography variant="h5" sx={{ fontSize: { xs: '1.25rem', sm: '1.875rem' }, marginBottom: 2 }} gutterBottom>Deck List</Typography>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
+            <Grid2 container spacing={2}>
+                <Grid2 item xs={12}>
                     <TextField
                         label="Card Name"
                         fullWidth
@@ -98,8 +98,8 @@ const CardListCreator = () => {
                         helperText={cardNameError ? "All cards have names - please add one" : ""} // Error message
                         required // Make the field visually required
                     />
-                </Grid>
-                <Grid item xs={6}>
+                </Grid2>
+                <Grid2 item xs={6}>
                     <TextField
                         label="Number"
                         type="number"
@@ -108,8 +108,8 @@ const CardListCreator = () => {
                         onChange={e => setCardNumber(Math.max(1, parseInt(e.target.value) || 1))} // Ensure at least 1
                         inputProps={{ min: 1 }} // Set minimum value in the input field
                     />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 item xs={12}>
                     <FormControl fullWidth>
                         <InputLabel id="card-type">Card Type</InputLabel>
                         <Select
@@ -127,8 +127,8 @@ const CardListCreator = () => {
                             <MenuItem value="Aura">Aura</MenuItem>
                         </Select>
                     </FormControl>
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 item xs={12}>
                     <FormControl fullWidth>
                         <InputLabel id="color-label">Color</InputLabel>
                         <Select
@@ -147,10 +147,10 @@ const CardListCreator = () => {
                             <MenuItem value="Multicolor">Multicolor</MenuItem>
                         </Select>
                     </FormControl>
-                </Grid>
+                </Grid2>
 
                 {cardColor === 'Multicolor' && ( // Conditionally render color checkboxes
-                    <Grid item xs={12}>
+                    <Grid2 item xs={12}>
                         <FormControl component="fieldset">
                             <FormGroup>
                                 {Object.keys(cardColors).map(color => (
@@ -162,10 +162,10 @@ const CardListCreator = () => {
                                 ))}
                             </FormGroup>
                         </FormControl>
-                    </Grid>
+                    </Grid2>
                 )}
 
-                <Grid item xs={12}>
+                <Grid2 item xs={12}>
                     <FormControl fullWidth>
                         <InputLabel id="grouping-label">Group By</InputLabel>
                         <Select
@@ -180,13 +180,13 @@ const CardListCreator = () => {
                             <MenuItem value="type">Type</MenuItem> {/* Add more options as needed */}
                         </Select>
                     </FormControl>
-                </Grid>
+                </Grid2>
 
-                <Grid item xs={12}>
+                <Grid2 item xs={12}>
                     <Button variant="contained" onClick={handleAddCard}>Add Card</Button>
-                </Grid>
+                </Grid2>
 
-                <Grid item xs={12}>
+                <Grid2 item xs={12}>
                     <Typography variant="h6">Card List:</Typography>
                     {Object.keys(groupedCardList).map(groupKey => (
                         <div key={groupKey}>
@@ -199,14 +199,14 @@ const CardListCreator = () => {
                             ))}
                         </div>
                     ))}
-                </Grid>
+                </Grid2>
 
-                <Grid item xs={12}>
+                <Grid2 item xs={12}>
                   <Fab color="primary" aria-label="export" onClick={handleExportCSV} disabled={cardList.length === 0}>
                     <FileDownloadIcon />
                   </Fab>
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
         </Paper>
     );
 };

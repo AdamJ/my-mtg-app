@@ -7,7 +7,7 @@ function InformationPage() {
       {/* Add your content here */}
       <h2>What Is This?</h2>
       <p>
-        Basically, this is a life counter and deck list "app" that I use for when I play at Cube events. All of the other counters and/or deck builders that I've used are great in their own ways, but I wanted to make something for myself that I could customize. If others like it, maybe I'll share it or distribute it through one of the app stores.
+        Basically, this is a life counter and deck list `&quot;`app`&quot;` that I use for when I play at Cube events. All of the other counters and/or deck builders that I`&apos;`ve used are great in their own ways, but I wanted to make something for myself that I could customize. If others like it, maybe I`&apos;`ll share it or distribute it through one of the app stores.
       </p>
       <p>
         This app is a project to demonstrate the use of React and Material-UI components to create a simple Magic: The Gathering (MTG) application.
@@ -22,7 +22,7 @@ function InformationPage() {
       <p>
         Magic: The Gathering is © <a href="https://company.wizards.com/en">Wizards of the Coast</a>. This project is not affiliated nor produced nor endorsed by Wizards of the Coast.
         All card images, mana symbols, expansions and art related to Magic the Gathering is a property of Wizards of the Coast/Hasbro.
-        This project may use the trademarks and other intellectual property of Wizards of the Coast LLC as permitted under Wizards' Fan Site Policy. MAGIC: THE GATHERING® is a trademark of Wizards of the Coast. For more information about Wizards of the Coast or any of Wizards' trademarks or other intellectual property, please visit their website at <a href="https://company.wizards.com/">https://company.wizards.com/</a>.
+        This project may use the trademarks and other intellectual property of Wizards of the Coast LLC as permitted under Wizards`&apos;` Fan Site Policy. MAGIC: THE GATHERING® is a trademark of Wizards of the Coast. For more information about Wizards of the Coast or any of Wizards`&apos;` trademarks or other intellectual property, please visit their website at <a href="https://company.wizards.com/">https://company.wizards.com/</a>.
       </p>
       {/* More components, text, etc. */}
     </PageTemplate>
