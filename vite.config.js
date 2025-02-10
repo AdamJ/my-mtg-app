@@ -3,35 +3,43 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  appType: 'spa',
+  images: [
+    ''
+  ],
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate', // or 'prompt'
+      devOptions: {
+        enabled: true
+      },
       injectRegister: 'auto',
       workbox: {
         // these options are examples
         // disable precaching in development
         // dont precache images
-        // runtimeCaching: [
-        //   {
-        //     urlPattern: ({ url }) => {
-        //       return !!url.pathname.match(
-        //         /^.*\.(?:eot|otf|woff|woff2|ttf|svg|png|jpe?g|gif|webp|ico|webm|mp3|mp4)$/i
-        //       );
-        //     },
-        //     handler: 'CacheFirst',
-        //     options: {
-        //       cacheName: 'static-resources',
-        //       expiration: {
-        //         maxEntries: 30,
-        //         maxAgeSeconds: 365 * 24 * 60 * 60, // 365 days
-        //       },
-        //     },
-        //   },
-        // ],
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => {
+              return !!url.pathname.match(
+                /^.*\.(?:eot|otf|woff|woff2|ttf|svg|png|jpe?g|gif|webp|ico|webm|mp3|mp4)$/i
+              );
+            },
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'static-resources',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 365 * 24 * 60 * 60, // 365 days
+              },
+            }
+          },
+        ],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
       },
       // add this to cache all the static assets
-      includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'maskable-icon-512x512.png', 'pwa-512x512.png', 'pwa-192x192.png', 'pwa-64x64.png', 'robots.txt', 'tap-icon.svg', 'tap-icon.png'],
       manifest: {
         name: 'MTG Life Counter', // Your app's name
         short_name: 'MTG Life', // Short name (for the app icon)
@@ -39,19 +47,47 @@ export default defineConfig({
         theme_color: '#171717', // Customize theme color
         icons: [
           {
-            src: '/android-chrome-192x192.png', // Path to your icon
+            src: '/pwa-64x64.png', // Path to your icon
+            sizes: '64x64',
+            type: 'image/png',
+          },
+          {
+            src: '/pwa-192x192.png', // Path to your icon
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: '/android-chrome-512x512.png', // Path to your icon
+            src: '/pwa-512x512.png', // Path to your icon
             sizes: '512x512',
             type: 'image/png',
           },
-          // ... other icon sizes
+          {
+            src: '/maskable-icon-512x512.png', // Path to your icon
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: '/apple-touch-icon-180x180.png', // Path to your icon
+            sizes: '180x180',
+            type: 'image/png',
+          },
+          {
+            src: '/favicon.ico', // Path to your icon
+            type: 'image/ico',
+          },
         ],
       },
     }),
   ],
+  server: {
+    port: 7150,
+    host: true,
+  },
+  preview: {
+    port: 7070,
+    open: true,
+    host: true,
+    https: false,
+  },
   base: '/my-mtg-app/', // Change this to your repo name
 })

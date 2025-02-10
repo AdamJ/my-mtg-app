@@ -4,9 +4,10 @@ import { Box, Container, Typography, TextField, Button, Grid2, Paper, IconButton
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Edit, Delete } from '@mui/icons-material'; // Import icons
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+
 // In your main App.jsx or another component:
 function AppLifeCounter() {
   const [player1Life, setPlayer1Life] = useState(20);

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'; // Import prop-types
 function PageTemplate({ title, children }) {
   return (
     <Container sx={{ mt: 4 }}> {/* Container for consistent spacing */}
-      <Typography variant="h1" gutterBottom component="h1"> {/* Main title */}
+      <Typography variant="h4" gutterBottom component="h1"> {/* Main title */}
         {title}
       </Typography>
       <Box> {/* Box for content */}

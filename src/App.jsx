@@ -93,9 +93,9 @@ function App() {
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                   MTG App
                 </Typography>
-                <Button color="inherit" component={Link} to="/">Life Counter</Button>
-                <Button color="inherit" component={Link} to="/card-list">Deck List</Button>
-                <Button color="inherit" component={Link} to="/info"><InfoIcon /></Button>
+                <Button color="inherit" component={Link} to="/my-mtg-app/life-counter">Life Counter</Button>
+                <Button color="inherit" component={Link} to="/my-mtg-app/card-list">Deck List</Button>
+                <Button color="inherit" component={Link} to="/my-mtg-app/info"><InfoIcon /></Button>
                 <FormGroup>
                   <FormControlLabel
                     control={<Switch checked={mode === 'dark'} onChange={handleModeChange} />}
@@ -107,9 +107,9 @@ function App() {
 
             <Box sx={{ padding: 2 }}> {/* Add some padding around content */}
               <Routes>
-                <Route path="/" element={<AppLifeCounter />} />
-                <Route path="/card-list" element={<CardListCreator />} />
-                <Route path="/info" element={<InformationPage />} />
+                <Route path="/my-mtg-app/life-counter" element={<AppLifeCounter />} />
+                <Route path="/my-mtg-app/card-list" element={<CardListCreator />} />
+                <Route path="/my-mtg-app/info" element={<InformationPage />} />
               </Routes>
             </Box>
           </Box>
