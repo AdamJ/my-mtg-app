@@ -53,4 +53,5 @@ export default defineConfig({
       },
     }),
   ],
+  base: '/my-mtg-app/', // Change this to your repo name
 })
