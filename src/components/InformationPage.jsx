@@ -13,11 +13,9 @@ function InformationPage() {
         This app is a project to demonstrate the use of React and Material-UI components to create a simple Magic: The Gathering (MTG) application.
       </p>
       <h2>Resources</h2>
-      <p>
-        <ul>
-          <li><a href="https://mana.andrewgioia.com/icons.html">Mana and Card icons</a> by <a href="https://andrewgioia.com">Andrew Gioia</a></li>
-        </ul>
-      </p>
+      <ul>
+        <li><a href="https://mana.andrewgioia.com/icons.html">Mana and Card icons</a> by <a href="https://andrewgioia.com">Andrew Gioia</a></li>
+      </ul>
       <h2>Disclaimer</h2>
       <p>
         Magic: The Gathering is © <a href="https://company.wizards.com/en">Wizards of the Coast</a>. This project is not affiliated nor produced nor endorsed by Wizards of the Coast.

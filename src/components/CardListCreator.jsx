@@ -107,7 +107,6 @@ const CardListCreator = () => {
               fullWidth
               value={cardNumber}
               onChange={e => setCardNumber(Math.max(1, parseInt(e.target.value) || 1))} // Ensure at least 1
-              HTMLinput={{ min: 1 }} // Set minimum value in the input field
             />
           </Grid2>
           <Grid2 item xs={12}>

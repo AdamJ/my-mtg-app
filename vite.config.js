@@ -41,7 +41,7 @@ export default defineConfig({
       // add this to cache all the static assets
       includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'maskable-icon-512x512.png', 'pwa-512x512.png', 'pwa-192x192.png', 'pwa-64x64.png', 'robots.txt', 'tap-icon.svg', 'tap-icon.png'],
       manifest: {
-        name: 'MTG Life Counter', // Your app's name
+        name: 'MTG Life Counter and Deck List', // Your app's name
         short_name: 'MTG Life', // Short name (for the app icon)
         description: 'A Magic: The Gathering life counter and deck list app.',
         theme_color: '#171717', // Customize theme color
