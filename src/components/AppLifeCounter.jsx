@@ -1,6 +1,6 @@
 // App.js
 import React, { useState, useEffect } from 'react';
-import { Box, Chip, Container, Divider, TextField, Button, Grid2, Paper, IconButton, Stack, Fab, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Button, ButtonGroup, Card, Chip, Container, TextField, Grid2, IconButton, Stack, List, ListItem, ListItemText } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -15,7 +15,10 @@ function AppLifeCounter() {
   const [player2Life, setPlayer2Life] = useState(20);
   const [playerName1, setPlayerName1] = useState("Adam");
   const [playerName2, setPlayerName2] = useState("Player 2");
-  const [matchHistory, setMatchHistory] = useState([]); // Array to store match data
+  const [matchHistory, setMatchHistory] = useState(() => { // Initialize from localStorage or empty array
+    const storedHistory = localStorage.getItem('matchHistory');
+    return storedHistory ? JSON.parse(storedHistory) : [];
+  });
   const [editIndex, setEditIndex] = useState(null); // Track the index being edited
   const [editMatch, setEditMatch] = useState(null); // Store the match data for editing
   const countPlayer1 = player1Life;
@@ -46,6 +49,10 @@ function AppLifeCounter() {
     localStorage.setItem('mtgLifeCounterData', JSON.stringify(dataToSave));
   }, [player1Life, player2Life, playerName1, playerName2, matchHistory]);
 
+  // Save data to localStorage for Match History
+  useEffect(() => {
+    localStorage.setItem('matchHistory', JSON.stringify(matchHistory));
+  }, [matchHistory]);
 
   const updateLife = (player, change) => {
     if (player === 1) {
@@ -91,10 +98,14 @@ function AppLifeCounter() {
       winner: winnerName, // Store winner's name directly
       date: new Date().toLocaleDateString(),
     };
-    setMatchHistory([...matchHistory, matchData]);
+    setMatchHistory((prevHistory) => [...prevHistory, matchData]); // Use functional update
     setPlayer1Life(20);
     setPlayer2Life(20);
   };
+
+  const clearHistory = () => {
+    setMatchHistory([]); // Clear the history state
+};
 
   const exportData = () => {
     const dataToExport = { player1Life, player2Life, playerName1, playerName2, matchHistory };
@@ -110,159 +121,163 @@ function AppLifeCounter() {
   };
 
   return (
-    <Container>
-      <Box sx={{
-          flexGrow: 1
-          // display: "flex",
-          // alignItems: "center",
-          // border: "1px solid",
-          // borderColor: "primary.main",
-          // bgcolor: "background.paper",
-          // color: "text.primary",
-        }}>
-        {/* <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' }, marginBottom: 2 }} align="center" gutterBottom>MTG Life Counter</Typography> */}
-        {/* <Paper elevation={0} square={false} sx={{ padding: 2, marginTop: 2 }}> */}
-          <Grid2 container spacing={{ xs: 2, md: 3 }} columns={{ xs: 1, sm: 2, md: 12}}>
-            {/* Player 2 */}
-            <Grid2 size={6}>
-              <Stack
-                spacing={{xs: 2 }}
-                direction="column"
-                useFlexGap
-                sx={{ flexWrap: 'wrap' }}
-              >
-                {/* <Typography variant="h5" sx={{marginBottom: 0, marginTop: 1, fontWeight: 600 }}>
-                  {playerName2}
-                </Typography> */}
-                <TextField label="Player 2" size="small" fullWidth value={playerName2} onChange={e => setPlayerName2(e.target.value)} />
-                <Button color="success" variant="outlined" aria-label="Add one to player 2" sx={{padding: 2}} onClick={() => updateLife(2, 1)}>
-                  <i className="ms ms-counter-plus"></i>&nbsp;
-                  Gain A Life
-                </Button>
-                <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer2}`} size="large" style={getChipStyle(countPlayer2)} />
-                <Button color="error" variant="outlined" aria-label="Remove one from player 2" sx={{padding: 2}} onClick={() => updateLife(2, -1)}>
-                  <i className="ms ms-counter-minus"></i>&nbsp;
-                  Lose A Life
-                </Button>
-              </Stack>
-            </Grid2>
-            {/* Player 1 */}
-            <Grid2 size={6}>
-              <Stack
-                spacing={{xs: 2 }}
-                direction="column"
-                useFlexGap
-                sx={{ flexWrap: 'wrap' }}
-              >
-                {/* <Typography variant="h5" sx={{marginBottom: 0, marginTop: 1, fontWeight: 600 }}>
-                  {playerName1}
-                </Typography> */}
-                <TextField label="Player 1" size="small" fullWidth value={playerName1} onChange={e => setPlayerName1(e.target.value)} />
-                <Button color="success" variant="outlined" aria-label="Add one to player 1" sx={{padding: 2}} onClick={() => updateLife(1, 1)}>
-                  <i className="ms ms-counter-plus"></i>&nbsp;
-                  Gain a life
-                </Button>{' '}
-                <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer1}`} size="large" style={getChipStyle(countPlayer1)} />
-                <Button color="error" variant="outlined" aria-label="Remove one from player 1" sx={{padding: 2}} onClick={() => updateLife(1, -1)}>
-                  <i className="ms ms-counter-minus"></i>&nbsp;
-                  Lose a life
-                </Button>
-              </Stack>
-            </Grid2>
+    <Box sx={{
+        flexGrow: 1
+        // display: "flex",
+        // alignItems: "center",
+        // border: "1px solid",
+        // borderColor: "primary.main",
+        // bgcolor: "background.paper",
+        // color: "text.primary",
+      }}>
+      {/* <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' }, marginBottom: 2 }} align="center" gutterBottom>MTG Life Counter</Typography> */}
+      {/* <Paper elevation={0} square={false} sx={{ padding: 2, marginTop: 2 }}> */}
+        <Grid2 container spacing={{ xs: 2, md: 3 }} columns={{ xs: 1, sm: 2, md: 12}}>
+          {/* Player 2 */}
+          <Grid2 size={6}>
+            <Card elevation={3} sx={{ padding: 2 }}>
+            <Stack
+              spacing={{xs: 2 }}
+              direction="column"
+              useFlexGap
+              sx={{ flexWrap: 'wrap' }}
+            >
+              {/* <Typography variant="h5" sx={{marginBottom: 0, marginTop: 1, fontWeight: 600 }}>
+                {playerName2}
+              </Typography> */}
+              <TextField label="Player 2" size="small" fullWidth value={playerName2} onChange={e => setPlayerName2(e.target.value)} />
+              <Button color="success" variant="outlined" aria-label="Add one to player 2" sx={{padding: 2}} onClick={() => updateLife(2, 1)}>
+                <i className="ms ms-counter-plus"></i>&nbsp;
+                Gain A Life
+              </Button>
+              <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer2}`} size="large" style={getChipStyle(countPlayer2)} />
+              <Button color="error" variant="outlined" aria-label="Remove one from player 2" sx={{padding: 2}} onClick={() => updateLife(2, -1)}>
+                <i className="ms ms-counter-minus"></i>&nbsp;
+                Lose A Life
+              </Button>
+            </Stack>
+            </Card>
           </Grid2>
-          {/* Set game winner */}
-          <Grid2 spacing={2}>
-            <Grid2 item xs={12}>
-              <Stack
-                direction="row"
-                spacing={2}
-                useFlexGap
-                sx={{
-                  flexWrap: 'wrap',
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginY: 2,
-                }}
-              >
-                <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName2)} size="medium">Winner</Button>
-                <Button variant="outlined" color="warning" sx={{ paddingX: 10 }} onClick={() => handleMatchEnd("Draw")} size="medium">Draw</Button> {/* Pass "Draw" as string */}
-                <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName1)} size="medium">Winner</Button>
-              </Stack>
-            </Grid2>
-            <Grid2 item xs={12}>
-              <Fab sx={{ position: 'fixed', bottom: 75, right: 16 }} color="primary" variant="extended" aria-label="export" onClick={exportData} disabled={matchHistory.length === 0}>
-                <FileDownloadIcon sx={{ mr: 1 }} />
-                Download
-              </Fab>
-            </Grid2>
+          {/* Player 1 */}
+          <Grid2 size={6}>
+            <Card elevation={3} sx={{ padding: 2 }}>
+            <Stack
+              spacing={{xs: 2 }}
+              direction="column"
+              useFlexGap
+              sx={{ flexWrap: 'wrap' }}
+            >
+              {/* <Typography variant="h5" sx={{marginBottom: 0, marginTop: 1, fontWeight: 600 }}>
+                {playerName1}
+              </Typography> */}
+              <TextField label="Player 1" size="small" fullWidth value={playerName1} onChange={e => setPlayerName1(e.target.value)} />
+              <Button color="success" variant="outlined" aria-label="Add one to player 1" sx={{padding: 2}} onClick={() => updateLife(1, 1)}>
+                <i className="ms ms-counter-plus"></i>&nbsp;
+                Gain a life
+              </Button>{' '}
+              <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer1}`} size="large" style={getChipStyle(countPlayer1)} />
+              <Button color="error" variant="outlined" aria-label="Remove one from player 1" sx={{padding: 2}} onClick={() => updateLife(1, -1)}>
+                <i className="ms ms-counter-minus"></i>&nbsp;
+                Lose a life
+              </Button>
+            </Stack>
+            </Card>
           </Grid2>
-        {/* </Paper> */}
-          {/* Match History */}
-        <Accordion slotProps={{ heading: { component: 'h3' } }} sx={{ marginTop: 4, marginBottom: 10}}>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="matchHistory-content"
-            id="matchHistory-header"
-          >
-            Match History
-          </AccordionSummary>
-          <AccordionDetails>
+        </Grid2>
+        {/* Set game winner */}
+        <Grid2 spacing={2}>
+          <Grid2 item xs={12}>
+            <Stack
+              direction="row"
+              spacing={2}
+              useFlexGap
+              sx={{
+                flexWrap: 'wrap',
+                justifyContent: "center",
+                alignItems: "center",
+                marginY: 2,
+              }}
+            >
+              <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName2)} size="medium">Winner</Button>
+              <Button variant="outlined" color="warning" sx={{ paddingX: 10 }} onClick={() => handleMatchEnd("Draw")} size="medium">Draw</Button> {/* Pass "Draw" as string */}
+              <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName1)} size="medium">Winner</Button>
+            </Stack>
+          </Grid2>
+        </Grid2>
+      {/* </Paper> */}
+        {/* Match History */}
+      <Accordion slotProps={{ heading: { component: 'h3' } }} sx={{ marginTop: 4, marginBottom: 10}}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="matchHistory-content"
+          id="matchHistory-header"
+        >
+          Match History
+        </AccordionSummary>
+        <AccordionDetails>
           <List>
-                {matchHistory.map((match, index) => (
-                  <ListItem disablePadding key={index} secondaryAction={
-                    <>
-                      {editIndex === index ? (
-                        <>
-                          <TextField
-                            label="Player 1 Life"
-                            type="number"
-                            value={editMatch.player1Life}
-                            onChange={(e) => handleEditInputChange('player1Life', e.target.value)}
-                            size="small"
-                            sx={{ mr: 1 }}
-                          />
-                          <TextField
-                            label="Player 2 Life"
-                            type="number"
-                            value={editMatch.player2Life}
-                            onChange={(e) => handleEditInputChange('player2Life', e.target.value)}
-                            size="small"
-                            sx={{ mr: 1 }}
-                          />
-                          <TextField
-                            label="Winner"
-                            value={editMatch.winner} // Now directly uses the name
-                            onChange={(e) => handleEditInputChange('winner', e.target.value)}
-                            size="small"
-                            sx={{ mr: 1 }}
-                          />
-                          <Button onClick={() => handleSaveEdit(index)} size="small" variant="contained">Save</Button>
-                        </>
-                      ) : (
-                        <IconButton onClick={() => handleEditMatch(index)}>
-                          <Edit />
-                        </IconButton>
-                      )}
-                      <IconButton onClick={() => handleDeleteMatch(index)} color="error">
-                        <Delete />
+              {matchHistory.map((match, index) => (
+                <ListItem disablePadding key={index} secondaryAction={
+                  <>
+                    {editIndex === index ? (
+                      <>
+                        <TextField
+                          label="Player 1 Life"
+                          type="number"
+                          value={editMatch.player1Life}
+                          onChange={(e) => handleEditInputChange('player1Life', e.target.value)}
+                          size="small"
+                          sx={{ mr: 1 }}
+                        />
+                        <TextField
+                          label="Player 2 Life"
+                          type="number"
+                          value={editMatch.player2Life}
+                          onChange={(e) => handleEditInputChange('player2Life', e.target.value)}
+                          size="small"
+                          sx={{ mr: 1 }}
+                        />
+                        <TextField
+                          label="Winner"
+                          value={editMatch.winner} // Now directly uses the name
+                          onChange={(e) => handleEditInputChange('winner', e.target.value)}
+                          size="small"
+                          sx={{ mr: 1 }}
+                        />
+                        <Button onClick={() => handleSaveEdit(index)} size="small" variant="contained">Save</Button>
+                      </>
+                    ) : (
+                      <IconButton onClick={() => handleEditMatch(index)}>
+                        <Edit />
                       </IconButton>
-                    </>
-                  }>
-                  <ListItemText
-                    primary={`${match.player1} (${match.player1Life}) vs ${match.player2} (${match.player2Life})`}
-                    secondary={
-                      <React.Fragment>
-                        <strong>Winner: {match.winner}</strong> - <em>{match.date}</em> {/* Display the name directly */}
-                      </React.Fragment>
-                    }
-                  />
-                </ListItem>
-                ))}
-              </List>
-          </AccordionDetails>
-        </Accordion>
-      </Box>
-    </Container>
+                    )}
+                    <IconButton onClick={() => handleDeleteMatch(index)} color="error">
+                      <Delete />
+                    </IconButton>
+                  </>
+                }>
+                <ListItemText
+                  primary={`${match.player1} (${match.player1Life}) vs ${match.player2} (${match.player2Life})`}
+                  secondary={
+                    <React.Fragment>
+                      <strong>Winner: {match.winner}</strong> - <em>{match.date}</em> {/* Display the name directly */}
+                    </React.Fragment>
+                  }
+                />
+              </ListItem>
+              ))}
+          </List>
+        </AccordionDetails>
+        <ButtonGroup color="secondary" variant="text" aria-label="match history actions" sx={{ padding: 2 }}>
+          <Button color="error" key="one" onClick={clearHistory} disabled={matchHistory.length === 0}>
+              Clear History
+          </Button>
+          <Button color="primary" key="two" startIcon={<FileDownloadIcon />} onClick={exportData} disabled={matchHistory.length === 0}>
+              Download
+          </Button>
+        </ButtonGroup>
+      </Accordion>
+    </Box>
   );
 }
 
