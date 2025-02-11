@@ -1,9 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PageTemplate from './PageTemplate'; // Adjust path if needed
-
+import { Alert, AlertTitle, List, ListItem, ListItemText } from '@mui/material'; // Import Alert and AlertTitle
+import packageJson from '../../package.json'; // No require!
 function InformationPage() {
+
+  const [latestVersion, setLatestVersion] = useState(null);
+  const [previousVersions, setPreviousVersions] = useState([]);
+
+  useEffect(() => {
+    try {
+      if (packageJson.hasOwnProperty('versionHistory') && packageJson.versionHistory.length > 0) {
+        const sortedVersions = [...packageJson.versionHistory].sort((a, b) => {
+          const versionA = parseFloat(a.version);
+          const versionB = parseFloat(b.version);
+          return versionB - versionA;
+        });
+
+        setLatestVersion(sortedVersions[0]);
+        setPreviousVersions(sortedVersions.slice(1)); // All versions except the first
+      } else if (packageJson.hasOwnProperty('versions') && packageJson.versions.length > 0) {
+        const sortedVersions = [...packageJson.versions].sort((a, b) => {
+           // Basic numerical comparison (adjust if needed for your version format)
+           const versionA = parseFloat(a);
+           const versionB = parseFloat(b);
+           return versionB - versionA; // Descending order (latest first)
+        });
+        setLatestVersion({version: sortedVersions[0], date: new Date().toLocaleDateString()}); // Get the first element (latest)
+        setPreviousVersions(sortedVersions.slice(1).map((version) => ({version: version, date: new Date().toLocaleDateString()})));
+      } else {
+        setLatestVersion({version: packageJson.version, date: new Date().toLocaleDateString()}); //For when no version history is recorded
+      }
+    } catch (error) {
+      console.error("Error reading package.json:", error);
+      setLatestVersion({version: "Version history not found", date: new Date().toLocaleDateString()});
+    }
+  }, []);
+
   return (
     <PageTemplate title="Information"> {/* Set the title */}
+      <Alert severity="info">
+      <AlertTitle>{latestVersion ? `Latest Version: ${latestVersion.version}` : "Version History"}</AlertTitle>
+        {previousVersions.length > 0 && ( // Only show the list if there are previous versions
+          <List>
+            {previousVersions.map((versionEntry, index) => (
+              <ListItem key={index}>
+                <ListItemText
+                  primary={`Version: ${versionEntry.version}`}
+                  secondary={versionEntry.date ? `Date: ${versionEntry.date}` : null}
+                />
+              </ListItem>
+            ))}
+          </List>
+        )}
+      </Alert>
       {/* Add your content here */}
       <h2>What Is This?</h2>
       <p>

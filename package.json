@@ -2,8 +2,14 @@
   "name": "my-mtg-app",
   "homepage": "/my-mtg-app/",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
+  "versionHistory": [
+    { "version": "0.3.0", "date": "2025-02-11"},
+    { "version": "0.2.0", "date": "2025-02-10"},
+    { "version": "0.1.1", "date": "2025-02-10"},
+    { "version": "0.1.0", "date": "2025-02-10"}
+  ],
   "scripts": {
     "generate-pwa-assets": "pwa-assets-generator",
     "dev": "vite",
