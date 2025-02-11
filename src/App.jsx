@@ -3,8 +3,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Switch from '@mui/material/Switch';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { AppBar, BottomNavigation, BottomNavigationAction, Paper, Container, Toolbar, Typography, Box, Slide } from '@mui/material'; // Import Material UI components
+import Dashboard from './components/Dashboard';
 import AppLifeCounter from './components/AppLifeCounter';
 import CardListCreator from './components/CardListCreator';
 import InformationPage from './components/InformationPage';
@@ -186,6 +187,10 @@ function App() {
             </Slide>
             <Box component="main" sx={{ padding: 2, marginTop: 8 }}> {/* Add some padding around content */}
               <Routes>
+                {/* Redirect to /dashboard */}
+                {/* Remove the <Navigate to> if a redirect is not wanted */}
+                <Route path="/my-mtg-app" element={<Navigate to="/my-mtg-app/dashboard" />} />
+                <Route path="/my-mtg-app/dashboard" element={<Dashboard />} />
                 <Route path="/my-mtg-app/life-counter" element={<AppLifeCounter />} />
                 <Route path="/my-mtg-app/card-list" element={<CardListCreator />} />
                 <Route path="/my-mtg-app/info" element={<InformationPage />} />
@@ -199,6 +204,7 @@ function App() {
                   setValue(newValue);
                 }}
               >
+                <BottomNavigationAction label="Dashboard" icon={<i className="ms ms-20"></i>} component={Link} to="/my-mtg-app/dashboard" />
                 <BottomNavigationAction label="Counter" icon={<i className="ms ms-20"></i>} component={Link} to="/my-mtg-app/life-counter" />
                 <BottomNavigationAction label="Cards" icon={<i className="ms ms-planeswalker"></i>} component={Link} to="/my-mtg-app/card-list" />
                 <BottomNavigationAction label="Info" icon={<i className="ms ms-tap"></i>} component={Link} to="/my-mtg-app/info" />

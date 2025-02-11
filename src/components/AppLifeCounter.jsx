@@ -130,82 +130,73 @@ function AppLifeCounter() {
         // bgcolor: "background.paper",
         // color: "text.primary",
       }}>
-      {/* <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' }, marginBottom: 2 }} align="center" gutterBottom>MTG Life Counter</Typography> */}
-      {/* <Paper elevation={0} square={false} sx={{ padding: 2, marginTop: 2 }}> */}
-        <Grid2 container spacing={{ xs: 2, md: 3 }} columns={{ xs: 1, sm: 2, md: 12}}>
-          {/* Player 2 */}
-          <Grid2 size={6}>
-            <Card elevation={3} sx={{ padding: 2 }}>
-            <Stack
-              spacing={{xs: 2 }}
-              direction="column"
-              useFlexGap
-              sx={{ flexWrap: 'wrap' }}
-            >
-              {/* <Typography variant="h5" sx={{marginBottom: 0, marginTop: 1, fontWeight: 600 }}>
-                {playerName2}
-              </Typography> */}
-              <TextField label="Player 2" size="small" fullWidth value={playerName2} onChange={e => setPlayerName2(e.target.value)} />
-              <Button color="success" variant="outlined" aria-label="Add one to player 2" sx={{padding: 2}} onClick={() => updateLife(2, 1)}>
-                <i className="ms ms-counter-plus"></i>&nbsp;
-                Gain A Life
-              </Button>
-              <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer2}`} size="large" style={getChipStyle(countPlayer2)} />
-              <Button color="error" variant="outlined" aria-label="Remove one from player 2" sx={{padding: 2}} onClick={() => updateLife(2, -1)}>
-                <i className="ms ms-counter-minus"></i>&nbsp;
-                Lose A Life
-              </Button>
-            </Stack>
-            </Card>
-          </Grid2>
-          {/* Player 1 */}
-          <Grid2 size={6}>
-            <Card elevation={3} sx={{ padding: 2 }}>
-            <Stack
-              spacing={{xs: 2 }}
-              direction="column"
-              useFlexGap
-              sx={{ flexWrap: 'wrap' }}
-            >
-              {/* <Typography variant="h5" sx={{marginBottom: 0, marginTop: 1, fontWeight: 600 }}>
-                {playerName1}
-              </Typography> */}
-              <TextField label="Player 1" size="small" fullWidth value={playerName1} onChange={e => setPlayerName1(e.target.value)} />
-              <Button color="success" variant="outlined" aria-label="Add one to player 1" sx={{padding: 2}} onClick={() => updateLife(1, 1)}>
-                <i className="ms ms-counter-plus"></i>&nbsp;
-                Gain a life
-              </Button>{' '}
-              <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer1}`} size="large" style={getChipStyle(countPlayer1)} />
-              <Button color="error" variant="outlined" aria-label="Remove one from player 1" sx={{padding: 2}} onClick={() => updateLife(1, -1)}>
-                <i className="ms ms-counter-minus"></i>&nbsp;
-                Lose a life
-              </Button>
-            </Stack>
-            </Card>
-          </Grid2>
+      <Grid2 container spacing={{ xs: 2, md: 3 }} columns={{ xs: 1, sm: 2, md: 12}}>
+        {/* Player 2 */}
+        <Grid2 size={6}>
+          <Card elevation={3} sx={{ padding: 2 }}>
+          <Stack
+            spacing={{xs: 2 }}
+            direction="column"
+            useFlexGap
+            sx={{ flexWrap: 'wrap' }}
+          >
+            <TextField label="Player 2" size="small" fullWidth value={playerName2} onChange={e => setPlayerName2(e.target.value)} />
+            <Button color="success" variant="outlined" aria-label="Add one to player 2" sx={{padding: 2}} onClick={() => updateLife(2, 1)}>
+              <i className="ms ms-counter-plus"></i>&nbsp;
+              Gain A Life
+            </Button>
+            <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer2}`} size="large" style={getChipStyle(countPlayer2)} />
+            <Button color="error" variant="outlined" aria-label="Remove one from player 2" sx={{padding: 2}} onClick={() => updateLife(2, -1)}>
+              <i className="ms ms-counter-minus"></i>&nbsp;
+              Lose A Life
+            </Button>
+          </Stack>
+          </Card>
         </Grid2>
-        {/* Set game winner */}
-        <Grid2 spacing={2}>
-          <Grid2 item xs={12}>
-            <Stack
-              direction="row"
-              spacing={2}
-              useFlexGap
-              sx={{
-                flexWrap: 'wrap',
-                justifyContent: "center",
-                alignItems: "center",
-                marginY: 2,
-              }}
-            >
-              <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName2)} size="medium">Winner</Button>
-              <Button variant="outlined" color="warning" sx={{ paddingX: 10 }} onClick={() => handleMatchEnd("Draw")} size="medium">Draw</Button> {/* Pass "Draw" as string */}
-              <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName1)} size="medium">Winner</Button>
-            </Stack>
-          </Grid2>
+        {/* Player 1 */}
+        <Grid2 size={6}>
+          <Card elevation={3} sx={{ padding: 2 }}>
+          <Stack
+            spacing={{xs: 2 }}
+            direction="column"
+            useFlexGap
+            sx={{ flexWrap: 'wrap' }}
+          >
+            <TextField label="Player 1" size="small" fullWidth value={playerName1} onChange={e => setPlayerName1(e.target.value)} />
+            <Button color="success" variant="outlined" aria-label="Add one to player 1" sx={{padding: 2}} onClick={() => updateLife(1, 1)}>
+              <i className="ms ms-counter-plus"></i>&nbsp;
+              Gain a life
+            </Button>{' '}
+            <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer1}`} size="large" style={getChipStyle(countPlayer1)} />
+            <Button color="error" variant="outlined" aria-label="Remove one from player 1" sx={{padding: 2}} onClick={() => updateLife(1, -1)}>
+              <i className="ms ms-counter-minus"></i>&nbsp;
+              Lose a life
+            </Button>
+          </Stack>
+          </Card>
         </Grid2>
-      {/* </Paper> */}
-        {/* Match History */}
+      </Grid2>
+      {/* Set game winner */}
+      <Grid2 spacing={2}>
+        <Grid2 item xs={12}>
+          <Stack
+            direction="row"
+            spacing={2}
+            useFlexGap
+            sx={{
+              flexWrap: 'wrap',
+              justifyContent: "center",
+              alignItems: "center",
+              marginY: 2,
+            }}
+          >
+            <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName2)} size="medium">Winner</Button>
+            <Button variant="outlined" color="warning" sx={{ paddingX: 10 }} onClick={() => handleMatchEnd("Draw")} size="medium">Draw</Button> {/* Pass "Draw" as string */}
+            <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName1)} size="medium">Winner</Button>
+          </Stack>
+        </Grid2>
+      </Grid2>
+      {/* Match History */}
       <Accordion slotProps={{ heading: { component: 'h3' } }} sx={{ marginTop: 4, marginBottom: 10}}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
