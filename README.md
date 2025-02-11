@@ -1,5 +1,10 @@
 # MTG Life Counter
 
+[![pages-build-deployment](https://github.com/AdamJ/my-mtg-app/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/AdamJ/my-mtg-app/actions/workflows/pages/pages-build-deployment)
+[![Deploy to Web](https://github.com/AdamJ/my-mtg-app/actions/workflows/.deploy.yml/badge.svg)](https://github.com/AdamJ/my-mtg-app/actions/workflows/.deploy.yml)
+[![Node.js Package](https://github.com/AdamJ/my-mtg-app/actions/workflows/npm-publish-github-packages.yml/badge.svg)](https://github.com/AdamJ/my-mtg-app/actions/workflows/npm-publish-github-packages.yml)
+[![Node.js CI](https://github.com/AdamJ/my-mtg-app/actions/workflows/node.js.yml/badge.svg)](https://github.com/AdamJ/my-mtg-app/actions/workflows/node.js.yml)
+
 A Magic: The Gathering Life Counter and deck list app.
 
 ## What is this?

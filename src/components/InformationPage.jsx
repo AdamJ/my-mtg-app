@@ -20,7 +20,6 @@ function InformationPage() {
         setPreviousVersions(sortedVersions.slice(1)); // All versions except the first
       } else if (packageJson.hasOwnProperty('versions') && packageJson.versions.length > 0) {
         const sortedVersions = [...packageJson.versions].sort((a, b) => {
-           // Basic numerical comparison (adjust if needed for your version format)
            const versionA = parseFloat(a);
            const versionB = parseFloat(b);
            return versionB - versionA; // Descending order (latest first)
@@ -31,7 +30,7 @@ function InformationPage() {
         setLatestVersion({version: packageJson.version, date: new Date().toLocaleDateString()}); //For when no version history is recorded
       }
     } catch (error) {
-      console.error("Error reading package.json:", error);
+      // console.error("Error reading package.json:", error);
       setLatestVersion({version: "Version history not found", date: new Date().toLocaleDateString()});
     }
   }, []);
