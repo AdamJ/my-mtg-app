@@ -122,7 +122,8 @@ function AppLifeCounter() {
 
   return (
     <Box sx={{
-        flexGrow: 1
+        flexGrow: 1,
+        marginBottom: 10,
         // display: "flex",
         // alignItems: "center",
         // border: "1px solid",
@@ -132,47 +133,83 @@ function AppLifeCounter() {
       }}>
       <Grid2 container spacing={{ xs: 2, md: 3 }} columns={{ xs: 1, sm: 2, md: 12}}>
         {/* Player 2 */}
-        <Grid2 size={6}>
+        <Grid2 size={6} sx={{
+          // padding: 2,
+          transition: 'transform 0.3s ease', // Add a transition for smooth rotation
+          '@media (orientation: portrait)': {
+            transform: 'rotate(180deg)', // Rotate 180 degrees in portrait
+            '& .MuiCard-root': {
+              transform: 'rotate(180deg)', // Rotate the Card content back
+            },
+            '& .MuiStack-root': {
+              transform: 'rotate(180deg)',  // Rotate the Stack content back
+            },
+            // '& .MuiChip-root': {
+              //     transform: 'rotate(180deg)',  // Rotate the Chip content back
+              // },
+              // '& .MuiButton-root': {
+                //     transform: 'rotate(180deg)',  // Rotate the Button content back
+                // },
+          },
+          '@media (orientation: landscape)': {
+            transform: 'rotate(180deg)', // Reset rotation in landscape
+                // '& .MuiCard-root': {
+                  //     transform: 'rotate(180deg)',  // Rotate the Card content back
+                  // },
+                  // '& .MuiStack-root': {
+                    //     transform: 'rotate(180deg)',  // Rotate the Stack content back
+                    // },
+                    // '& .MuiChip-root': {
+                      //     transform: 'rotate(180deg)',  // Rotate the Chip content back
+                      // },
+                      // '& .MuiButton-root': {
+                        //     transform: 'rotate(180deg)',  // Rotate the Button content back
+                        // },
+          },
+          '@media screen and (min-width: 600px)': {
+            transform: 'rotate(0deg)',
+          },
+      }}>
           <Card elevation={3} sx={{ padding: 2 }}>
-          <Stack
-            spacing={{xs: 2 }}
-            direction="column"
-            useFlexGap
-            sx={{ flexWrap: 'wrap' }}
-          >
-            <TextField label="Player 2" size="small" fullWidth value={playerName2} onChange={e => setPlayerName2(e.target.value)} />
-            <Button color="success" variant="outlined" aria-label="Add one to player 2" sx={{padding: 2}} onClick={() => updateLife(2, 1)}>
-              <i className="ms ms-counter-plus"></i>&nbsp;
-              Gain A Life
-            </Button>
-            <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer2}`} size="large" style={getChipStyle(countPlayer2)} />
-            <Button color="error" variant="outlined" aria-label="Remove one from player 2" sx={{padding: 2}} onClick={() => updateLife(2, -1)}>
-              <i className="ms ms-counter-minus"></i>&nbsp;
-              Lose A Life
-            </Button>
-          </Stack>
+            <Stack
+              spacing={{xs: 2 }}
+              direction="column"
+              useFlexGap
+              sx={{ flexWrap: 'wrap' }}
+            >
+              <TextField label="Player 2" size="small" fullWidth value={playerName2} onChange={e => setPlayerName2(e.target.value)} />
+              <Button color="success" variant="outlined" aria-label="Add one to player 2" sx={{padding: 2}} onClick={() => updateLife(2, 1)}>
+                <i className="ms ms-counter-plus"></i>&nbsp;
+                Gain A Life
+              </Button>
+              <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer2}`} size="large" style={getChipStyle(countPlayer2)} />
+              <Button color="error" variant="outlined" aria-label="Remove one from player 2" sx={{padding: 2}} onClick={() => updateLife(2, -1)}>
+                <i className="ms ms-counter-minus"></i>&nbsp;
+                Lose A Life
+              </Button>
+            </Stack>
           </Card>
         </Grid2>
         {/* Player 1 */}
         <Grid2 size={6}>
           <Card elevation={3} sx={{ padding: 2 }}>
-          <Stack
-            spacing={{xs: 2 }}
-            direction="column"
-            useFlexGap
-            sx={{ flexWrap: 'wrap' }}
-          >
-            <TextField label="Player 1" size="small" fullWidth value={playerName1} onChange={e => setPlayerName1(e.target.value)} />
-            <Button color="success" variant="outlined" aria-label="Add one to player 1" sx={{padding: 2}} onClick={() => updateLife(1, 1)}>
-              <i className="ms ms-counter-plus"></i>&nbsp;
-              Gain a life
-            </Button>{' '}
-            <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer1}`} size="large" style={getChipStyle(countPlayer1)} />
-            <Button color="error" variant="outlined" aria-label="Remove one from player 1" sx={{padding: 2}} onClick={() => updateLife(1, -1)}>
-              <i className="ms ms-counter-minus"></i>&nbsp;
-              Lose a life
-            </Button>
-          </Stack>
+            <Stack
+              spacing={{xs: 2 }}
+              direction="column"
+              useFlexGap
+              sx={{ flexWrap: 'wrap' }}
+            >
+              <TextField label="Player 1" size="small" fullWidth value={playerName1} onChange={e => setPlayerName1(e.target.value)} />
+              <Button color="success" variant="outlined" aria-label="Add one to player 1" sx={{padding: 2}} onClick={() => updateLife(1, 1)}>
+                <i className="ms ms-counter-plus"></i>&nbsp;
+                Gain a life
+              </Button>{' '}
+              <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer1}`} size="large" style={getChipStyle(countPlayer1)} />
+              <Button color="error" variant="outlined" aria-label="Remove one from player 1" sx={{padding: 2}} onClick={() => updateLife(1, -1)}>
+                <i className="ms ms-counter-minus"></i>&nbsp;
+                Lose a life
+              </Button>
+            </Stack>
           </Card>
         </Grid2>
       </Grid2>
@@ -197,7 +234,11 @@ function AppLifeCounter() {
         </Grid2>
       </Grid2>
       {/* Match History */}
-      <Accordion slotProps={{ heading: { component: 'h3' } }} sx={{ marginTop: 4, marginBottom: 10}}>
+      <Accordion slotProps={{ heading: { component: 'h3' } }} sx={
+        { marginTop: 4,
+          marginBottom: 10,
+        }}
+        className="match-history">
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="matchHistory-content"

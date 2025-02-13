@@ -10,6 +10,7 @@ import AppLifeCounter from './components/AppLifeCounter';
 import CardListCreator from './components/CardListCreator';
 import InformationPage from './components/InformationPage';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Icon from '@mui/material/Icon';
 
 function App() {
 
@@ -198,16 +199,16 @@ function App() {
             </Box>
             <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
               <BottomNavigation
-                showLabels
+                // showLabels
                 value={value}
                 onChange={(event, newValue) => {
                   setValue(newValue);
                 }}
               >
-                <BottomNavigationAction label="Dashboard" icon={<i className="ms ms-20"></i>} component={Link} to="/my-mtg-app/dashboard" />
-                <BottomNavigationAction label="Counter" icon={<i className="ms ms-20"></i>} component={Link} to="/my-mtg-app/life-counter" />
-                <BottomNavigationAction label="Cards" icon={<i className="ms ms-planeswalker"></i>} component={Link} to="/my-mtg-app/card-list" />
-                <BottomNavigationAction label="Info" icon={<i className="ms ms-tap"></i>} component={Link} to="/my-mtg-app/info" />
+                <BottomNavigationAction icon={<Icon baseClassName="ms ms-ability-d20"></Icon>} component={Link} to="/my-mtg-app/dashboard" />
+                <BottomNavigationAction icon={<Icon baseClassName="ms ms-20"></Icon>} component={Link} to="/my-mtg-app/life-counter" />
+                <BottomNavigationAction icon={<Icon baseClassName="ms ms-ability-copy"></Icon>} component={Link} to="/my-mtg-app/card-list" />
+                <BottomNavigationAction icon={<Icon baseClassName="ms ms-tap"></Icon>} component={Link} to="/my-mtg-app/info" />
               </BottomNavigation>
             </Paper>
           </Box>
