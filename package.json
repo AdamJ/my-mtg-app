@@ -42,6 +42,7 @@
     "@mui/material": "^6.4.3",
     "axios": "^1.7.9",
     "file-saver": "^2.0.5",
+    "localforage": "^1.10.0",
     "mana-font": "^1.18.0",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",

@@ -1,60 +1,80 @@
 import React, { useState, useEffect } from 'react';
-import { Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, Divider, FormControl, FormGroup, FormHelperText, FormControlLabel, Grid2, InputAdornment, InputLabel, Link, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, AlertTitle, Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, Divider, FormControl, FormGroup, FormHelperText, FormControlLabel, Grid2, InputLabel, Link, MenuItem, Select, TextField, Typography } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
+import localForage from 'localforage';
+
+localForage.config({
+  driver: localForage.INDEXEDDB, // Use IndexedDB
+  name: 'scryfallOracleCardsCache' // Distinct name for oracle cards
+});
 
 const CardListCreator = () => {
 
   const [cardData, setCardData] = useState({}); // Store Scryfall card data
   const [loading, setLoading] = useState(false); // Loading state for API calls
   const [cardNameOptions, setCardNameOptions] = useState([]); // Autocomplete options
-
-  useEffect(() => {
-    const fetchCardData = async () => {
-        setLoading(true);
-        try {
-          const response = await axios.get('https://api.scryfall.com/bulk-data');
-          const bulkDataUrl = response.data.data.find(item => item.type === 'default_cards').download_uri;
-
-          const cardDataResponse = await axios.get(bulkDataUrl);
-          const allCards = cardDataResponse.data;
-
-          // Index card data by name for faster lookup
-          const cardDataByName = {};
-          const nameOptions = new Set(); // Use a Set to avoid duplicates
-          allCards.forEach(card => {
-              cardDataByName[card.name] = card;
-              nameOptions.add(card.name);
-          });
-
-          setCardData(cardDataByName);
-          setCardNameOptions(Array.from(nameOptions)); // Convert Set to Array
-        } catch (error) {
-            console.error("Error fetching card data:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    fetchCardData();
-}, []);
-
   const [cardName, setCardName] = useState('');
   const [inputValue, setInputValue] = useState("");
   const [cardNumber, setCardNumber] = useState(1);
   const [cardType, setCardType] = useState('Creature');
   const [cardColor, setCardColor] = useState('Colorless');
+  const [landType, setLandType] = useState(''); // State for land type
+  const [landTypeOptions, setLandTypeOptions] = useState([]); // Options for land type
   const [cardColors, setCardColors] = useState({  // Store selected colors for Multicolor
     White: false,
     Blue: false,
     Black: false,
     Red: false,
     Green: false,
+    None: false,
   });
   const [cardList, setCardList] = useState([]);
   const [cardNameError, setCardNameError] = useState(false); // State for error
-  const [groupingOption, setGroupingOption] = useState('color'); // Default grouping option
+  const [groupingOption, setGroupingOption] = useState('type'); // Default grouping option
+
+  useEffect(() => {
+    const loadCardData = async () => {
+      setLoading(true);
+      try {
+        const storedCardData = await localForage.getItem('scryfallOracleCardData');
+        const storedCardNames = await localForage.getItem('scryfallOracleCardNames');
+
+        if (storedCardData && storedCardNames) {
+          setCardData(storedCardData);
+          setCardNameOptions(storedCardNames);
+          console.log("Loaded oracle card data from IndexedDB");
+        } else {
+          const response = await axios.get('https://api.scryfall.com/bulk-data/oracle-cards');
+          const bulkDataUrl = response.data.download_uri; // Correct path for oracle-cards
+
+          const cardDataResponse = await axios.get(bulkDataUrl);
+          const allCards = cardDataResponse.data;
+
+          const cardDataByName = {};
+          const nameOptions = new Set();
+          allCards.forEach(card => {
+            cardDataByName[card.name] = card;
+            nameOptions.add(card.name);
+          });
+
+          await localForage.setItem('scryfallOracleCardData', cardDataByName);
+          await localForage.setItem('scryfallOracleCardNames', Array.from(nameOptions));
+          console.log("Fetched and stored oracle card data in IndexedDB");
+
+          setCardData(cardDataByName);
+          setCardNameOptions(Array.from(nameOptions));
+        }
+      } catch (error) {
+        console.error("Error fetching or loading oracle card data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCardData();
+  }, []);
 
   const handleAddCard = () => {
     if (cardName.trim() === '') {
@@ -82,15 +102,21 @@ const CardListCreator = () => {
       number: cardNumber,
       type: cardType,
       color: colorToSave,
+      landType: landType,
       scryfallData: selectedCardData // Store Scryfall data
     }]);
 
-    setCardName('');
-    setCardNumber(1);
-    setCardType('Creature'); // Reset card type
-    setCardColor('Colorless');
-    setCardColors({ White: false, Blue: false, Black: false, Red: false, Green: false });
-    setCardNameError(false);
+    setCardList([...cardList, {
+      name: cardName,
+      number: cardNumber,
+      type: cardType,
+      color: colorToSave,
+      landType: landType, // Add land type to card object
+      scryfallData: selectedCardData
+    }]);
+    // ... (reset state after adding card, including landType)
+    setLandType(''); // Reset land type
+    setLandTypeOptions([]); // Reset land type options
   };
 
   const handleInputChange = (event, newInputValue) => {
@@ -98,22 +124,79 @@ const CardListCreator = () => {
   };
 
   const handleCardNameChange = (event, newValue) => {
-    setCardName(newValue || ""); // Update cardName
-    setInputValue(newValue || ""); // Sync inputValue
-    if (newValue && cardData[newValue]) { // Check if card exists and update error state
-      setCardNameError(false); // Clear error if card exists
-    } else {
-      setCardNameError(true); // Set error if card doesn't exist
-    }
+    setCardName(newValue || "");
+    setInputValue(newValue || "");
 
+    if (newValue && cardData[newValue]) {
+      const selectedCard = cardData[newValue];
+
+      setCardNameError(false);
+
+      // Set Card Type (simplified)
+      const typeMatches = {
+        Artifact: "Artifact",
+        Battle: "Battle",
+        Consipiracy: "Conspiracy",
+        Creature: "Creature",
+        Dungeon: "Dungeon",
+        Emblem: "Emblem",
+        Enchantment: "Enchantment",
+        Hero: "Hero",
+        Instant: "Instant",
+        Kindred: "Kindred",
+        Land: "Land",
+        Phenomenon: "Phenomenon",
+        Plane: "Plane",
+        Planeswalker: "Planeswalker",
+        Scheme: "Scheme",
+        Sorcery: "Sorcery",
+        Vanguard: "Vanguard",
+      };
+      const foundType = Object.keys(typeMatches).find(type => selectedCard.type_line.includes(type));
+      setCardType(foundType || "Other"); // Default to "Other" if no match
+
+      // Set Land Type and Options (if card is a land)
+      if (selectedCard.type_line.includes("Land")) {
+        const landTypes = selectedCard.type_line.split("—")[1]?.trim().split(" // ")[0].split("/");
+        setLandTypeOptions(landTypes || []);
+        setLandType(landTypes?.length > 0 ? landTypes[0] : '');
+
+        return;
+      } else {
+        setLandTypeOptions([]);
+        setLandType('');
+      }
+
+      // Set Card Color (only if NOT a land)
+      const colors = selectedCard.colors?.map(color => ({ W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green', N: 'None' }[color])) || ['Colorless'];
+      setCardColor(colors.length > 1 ? 'Multicolor' : colors[0]);
+
+      const newCardColors = { White: false, Blue: false, Black: false, Red: false, Green: false, None: false };
+      colors.forEach(color => newCardColors[color] = true);
+      setCardColors(newCardColors);
+
+    } else {
+      setCardNameError(true);
+      setCardType('Artifact');
+      setCardColor('Colorless');
+      setCardColors({
+        White: false,
+        Blue: false,
+        Black: false,
+        Red: false,
+        Green: false,
+        None: false
+        });
+        setLandTypeOptions([]);
+        setLandType('');
+    }
   };
 
   const handleExportCSV = () => {
     if (cardList.length === 0) return;
 
-    // Include cardType in the CSV export:
-    const header = "Name,Number,Type,Color\n"; // Add header row
-    const csvData = header + cardList.map(card => `${card.name},${card.number},${card.type},${card.color}`).join('\n');
+    const header = "Name,Number,Type,Color,Land Type\n"; // Add Land Type to header
+    const csvData = header + cardList.map(card => `${card.name},${card.number},${card.type},${card.color},${card.landType || ""}`).join('\n'); // Add landType to CSV data
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
     saveAs(blob, 'card_list.csv');
   };
@@ -156,6 +239,9 @@ const CardListCreator = () => {
       <Typography variant="h5" sx={{ fontSize: { xs: '1.25rem', sm: '1.875rem' }, marginBottom: 2 }} gutterBottom>
         Deck List
       </Typography>
+      <Alert severity="info">
+        <AlertTitle>Heads Up!</AlertTitle>Scryfall integrations are a work in progress. If the Card Type or Color is incorrect, you may change it before adding the card to your deck list.
+      </Alert>
       <Card sx={{ marginBottom: 4 }}>
         <CardContent>
           <Grid2 container spacing={{ xs: 2, md: 4 }} columns={{ xs: 1, sm: 2, md: 8}}>
@@ -174,14 +260,14 @@ const CardListCreator = () => {
                     fullWidth
                     size="small"
                     error={cardNameError}
-                    helperText={cardNameError ? "Card not found" : ""}
+                    helperText={cardNameError ? "Card not found" : "Begin typing to search Scryfall"}
                     required
                     InputProps={{
                       ...params.InputProps, // Spread existing InputProps
                       endicon: loading ? <CircularProgress size={20} /> : null,
                   }}
                     sx={{
-                      minWidth: 200,
+                      minWidth: 300,
                       '& .MuiInputLabel-root': { color: 'gray' },
                       '& .MuiInoutLabel-shrink': { color: 'blue' }
                     }}
@@ -208,22 +294,48 @@ const CardListCreator = () => {
               <FormControl sx={{ minWidth: 175 }} size="small">
                 <InputLabel id="card-type">Card Type</InputLabel>
                   <Select
-                  labelId="card-type"
-                  id="card-type-select"
-                  value={cardType}
-                  label="Type"
-                  onChange={e => setCardType(e.target.value)}
+                    labelId="card-type"
+                    id="card-type-select"
+                    value={cardType}
+                    label="Type"
+                    onChange={e => setCardType(e.target.value)}
                   >
+                    <MenuItem value="Artifact">Artifact</MenuItem>,
+                    <MenuItem value="Battle">Battle</MenuItem>,
+                    <MenuItem value="Conspiracy">Conspiracy</MenuItem>,
                     <MenuItem value="Creature">Creature</MenuItem>
-                    <MenuItem value="Planeswalker">Planeswalker</MenuItem>
-                    <MenuItem value="Sorcery">Sorcery</MenuItem>
-                    <MenuItem value="Instant">Instant</MenuItem>
+                    <MenuItem value="Dungeon">Dungeon</MenuItem>,
+                    <MenuItem value="Emblem">Emblem</MenuItem>,
                     <MenuItem value="Enchantment">Enchantment</MenuItem>
-                    <MenuItem value="Artifact">Artifact</MenuItem>
-                    <MenuItem value="Aura">Aura</MenuItem>
+                    <MenuItem value="Hero">Hero</MenuItem>,
+                    <MenuItem value="Instant">Instant</MenuItem>
+                    <MenuItem value="Kindred">Kindred</MenuItem>,
                     <MenuItem value="Land">Land</MenuItem>
+                    <MenuItem value="Phenomenon">Phenomenon</MenuItem>,
+                    <MenuItem value="Plane">Plane</MenuItem>,
+                    <MenuItem value="Planeswalker">Planeswalker</MenuItem>
+                    <MenuItem value="Scheme">Scheme</MenuItem>,
+                    <MenuItem value="Sorcery">Sorcery</MenuItem>
+                    <MenuItem value="Vanguard">Vanguard</MenuItem>,
                   </Select>
                 </FormControl>
+                {cardType === 'Land' && (
+                  <FormControl sx={{ minWidth: 175 }} size="small" disabled>
+                    <InputLabel id="land-type-label">Land Type</InputLabel>
+                    <Select
+                      labelId="land-type-label"
+                      id="land-type-select"
+                      value={landType} // Value MUST be a valid option
+                      label="Land Type"
+                      onChange={e => setLandType(e.target.value)}
+                    >
+                      <MenuItem value="">{/* Add empty string option */}</MenuItem> {/* Important! */}
+                      {landTypeOptions.map(type => (
+                        <MenuItem key={type} value={type}>{type}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
                 <FormControl sx={{ minWidth: 80 }} size="small">
                   <InputLabel id="color-label">Color</InputLabel>
                     <Select
@@ -233,6 +345,7 @@ const CardListCreator = () => {
                     label="Color"
                     onChange={e => setCardColor(e.target.value)}
                     >
+                      <MenuItem value="None">None</MenuItem>
                       <MenuItem value="Colorless">Colorless</MenuItem>
                       <MenuItem value="White">White <i className="ms ms-w"></i></MenuItem>
                       <MenuItem value="Blue">Blue <i className="ms ms-u"></i></MenuItem>
@@ -290,10 +403,10 @@ const CardListCreator = () => {
         <Card>
           <CardContent>
             <Grid2 item xs={12}>
-              <Typography variant="h6">Card List:</Typography>
+              <Typography variant="h5">List:</Typography>
               {Object.keys(groupedCardList).map(groupKey => (
               <div key={groupKey}>
-                <Typography variant="subtitle1">{groupKey}</Typography>
+                <Typography variant="subtitle1"><strong>Group: {groupKey}</strong></Typography>
                 {groupedCardList[groupKey].map((card, index) => (
                   <div key={index}>
                     <Link
@@ -302,14 +415,12 @@ const CardListCreator = () => {
                       rel="noopener noreferrer"
                     >
                       {card.name}
-                    </Link>
-                    ({card.number}) - {card.color}
-                    <br />
-                    {card.type}
+                    </Link>&nbsp;
+                    ({card.number}) - {card.color} {card.type}
                     {/* Accessing Scryfall data */}
                     {card.scryfallData && (
                     <div>
-                      <img src={card.scryfallData.image_uris?.normal} alt={card.name} />
+                      <img src={card.scryfallData.image_uris?.normal} alt={card.name} style={{ objectFit: 'contain', width: '100px' }} />
                     </div>
                     )}
                   </div>
