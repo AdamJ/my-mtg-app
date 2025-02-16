@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, AlertTitle, Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, Divider, FormControl, FormGroup, FormHelperText, FormControlLabel, Grid2, InputLabel, Link, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, AlertTitle, Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, Divider, FormControl, FormGroup, FormHelperText, FormControlLabel, Grid2, IconButton, InputLabel, Link, MenuItem, Select, TextField, Typography } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
 import localForage from 'localforage';
@@ -33,6 +34,45 @@ const CardListCreator = () => {
   const [cardList, setCardList] = useState([]);
   const [cardNameError, setCardNameError] = useState(false); // State for error
   const [groupingOption, setGroupingOption] = useState('type'); // Default grouping option
+
+  const handleUpdateCardNumber = (index, newNumber) => {
+    const updatedCardList = [...cardList];
+    updatedCardList[index].number = Math.max(1, parseInt(newNumber) || 1); // Ensure at least 1
+    setCardList(updatedCardList);
+  };
+  const handleDeleteCard = (index) => {
+    const updatedCardList = cardList.filter((_, i) => i !== index);
+    setCardList(updatedCardList);
+  };
+
+  const CARD_LIST_STORAGE_KEY = 'my-app-card-list'; // Key for localForage
+
+  useEffect(() => {
+    const loadCardList = async () => {
+      try {
+        const storedCardList = await localForage.getItem(CARD_LIST_STORAGE_KEY);
+        if (storedCardList) {
+          setCardList(storedCardList);
+        }
+      } catch (error) {
+        console.error("Error loading card list from localForage:", error);
+      }
+    };
+    loadCardList();
+  }, []);
+
+  useEffect(() => {
+    // Save card list to localForage whenever it changes
+    const saveCardList = async () => {
+      try {
+        await localForage.setItem(CARD_LIST_STORAGE_KEY, cardList);
+      } catch (error) {
+        console.error("Error saving card list to localForage:", error);
+      }
+    };
+
+    saveCardList();
+  }, [cardList]);
 
   useEffect(() => {
     const loadCardData = async () => {
@@ -106,14 +146,6 @@ const CardListCreator = () => {
       scryfallData: selectedCardData // Store Scryfall data
     }]);
 
-    setCardList([...cardList, {
-      name: cardName,
-      number: cardNumber,
-      type: cardType,
-      color: colorToSave,
-      landType: landType, // Add land type to card object
-      scryfallData: selectedCardData
-    }]);
     // ... (reset state after adding card, including landType)
     setLandType(''); // Reset land type
     setLandTypeOptions([]); // Reset land type options
@@ -136,7 +168,7 @@ const CardListCreator = () => {
       const typeMatches = {
         Artifact: "Artifact",
         Battle: "Battle",
-        Consipiracy: "Conspiracy",
+        Conspiracy: "Conspiracy",
         Creature: "Creature",
         Dungeon: "Dungeon",
         Emblem: "Emblem",
@@ -281,9 +313,9 @@ const CardListCreator = () => {
                 }}
               />
             </Grid2>
-            <Grid2 item size={{ xs: 12, md: 1 }}>
+            <Grid2 item size={{ xs: 6, md: 1 }}>
               <TextField
-                label="Number"
+                label="Count"
                 type="number"
                 size="small"
                 value={cardNumber}
@@ -405,28 +437,30 @@ const CardListCreator = () => {
             <Grid2 item xs={12}>
               <Typography variant="h5">List:</Typography>
               {Object.keys(groupedCardList).map(groupKey => (
-              <div key={groupKey}>
-                <Typography variant="subtitle1"><strong>Group: {groupKey}</strong></Typography>
-                {groupedCardList[groupKey].map((card, index) => (
-                  <div key={index}>
-                    <Link
-                      href={`https://scryfall.com/card/vma/324/=${encodeURIComponent(card.name)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {card.name}
-                    </Link>&nbsp;
-                    ({card.number}) - {card.color} {card.type}
-                    {/* Accessing Scryfall data */}
-                    {card.scryfallData && (
-                    <div>
-                      <img src={card.scryfallData.image_uris?.normal} alt={card.name} style={{ objectFit: 'contain', width: '100px' }} />
-                    </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+            <div key={groupKey}>
+              {/* ... (groupKey JSX) */}
+
+              {groupedCardList[groupKey].map((card, index) => (
+                <div key={index} style={{ display: 'flex', alignItems: 'center' }}> {/* Add flexbox for alignment */}
+                  <strong>{card.name}</strong>
+                  {/* Number Input */}
+                  <TextField
+                    type="number"
+                    size="small"
+                    value={card.number}
+                    onChange={e => handleUpdateCardNumber(groupedCardList[groupKey].indexOf(card) + Object.keys(groupedCardList).slice(0, Object.keys(groupedCardList).indexOf(groupKey)).reduce((acc, curr) => acc + groupedCardList[curr].length, 0), e.target.value)} // Pass index and new value
+                    sx={{ width: '60px', margin: '0 8px' }} // Adjust width and add margin
+                  /> - {card.color} - {card.type}
+                  {/* ... (Scryfall data JSX) */}
+
+                   {/* Delete Button */}
+                  <IconButton aria-label="delete" onClick={() => handleDeleteCard(cardList.indexOf(card))}>
+                    <DeleteIcon />
+                  </IconButton>
+                </div>
               ))}
+            </div>
+          ))}
             </Grid2>
           </CardContent>
         </Card>
