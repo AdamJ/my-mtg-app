@@ -14,6 +14,9 @@ Basically, this is a life counter and deck list "app" that I use for when I play
 ## Resources
 
 - [Mana and Card icons](https://mana.andrewgioia.com/icons.html) by [Andrew Gioia](https://andrewgioia.com)
+- [Google Gemini](https://gemini.google.com "Link to Google Gemini")
+  - [Conversation that started this project](https://g.co/gemini/share/b995bfe31add "Link to Google Gemini chat history") _Created with Gemini February 9, 2025 at 11:07 AM
+Published February 16, 2025 at 11:47 AM_
 
 > **Disclaimer** Magic: The Gathering is © [Wizards of the Coast](https://company.wizards.com/en). This project is not affiliated nor produced nor endorsed by Wizards of the Coast.
 All card images, mana symbols, expansions and art related to Magic the Gathering is a property of Wizards of the Coast/Hasbro.

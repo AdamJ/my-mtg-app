@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, AlertTitle, Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, Divider, FormControl, FormGroup, FormHelperText, FormControlLabel, Grid2, IconButton, InputLabel, List, ListItem, ListItemIcon, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, AlertTitle, Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, FormControl, FormGroup, FormControlLabel, Grid2, IconButton, InputLabel, List, ListItem, ListSubheader, ListItemIcon, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
 import localForage from 'localforage';
+import MyAlert from './MyAlerts';
+import MyColorPicker from './MyColorPicker'; // Import the ColorPicker
 
 localForage.config({
   driver: localForage.INDEXEDDB, // Use IndexedDB
@@ -18,26 +20,26 @@ const CardListCreator = () => {
   const [cardNameOptions, setCardNameOptions] = useState([]); // Autocomplete options
   const [cardName, setCardName] = useState('');
   const [inputValue, setInputValue] = useState("");
-  const [cardNumber, setCardNumber] = useState(1);
+  const [cardCount, setCardCount] = useState(1);
   const [cardType, setCardType] = useState('Creature');
   const [cardColor, setCardColor] = useState('Colorless');
   const [landType, setLandType] = useState(''); // State for land type
   const [landTypeOptions, setLandTypeOptions] = useState([]); // Options for land type
-  const [cardColors, setCardColors] = useState({  // Store selected colors for Multicolor
+  const [cardColors, setCardColors] = useState({
     White: false,
     Blue: false,
     Black: false,
     Red: false,
     Green: false,
-    None: false,
+    Colorless: false, // Changed from None to Colorless
   });
   const [cardList, setCardList] = useState([]);
   const [cardNameError, setCardNameError] = useState(false); // State for error
   const [groupingOption, setGroupingOption] = useState('type'); // Default grouping option
 
-  const handleUpdateCardNumber = (index, newNumber) => {
+  const handleUpdateCardCount = (index, newCount) => {
     const updatedCardList = [...cardList];
-    updatedCardList[index].number = Math.max(1, parseInt(newNumber) || 1); // Ensure at least 1
+    updatedCardList[index].count = Math.max(1, parseInt(newCount) || 1); // Ensure at least 1
     setCardList(updatedCardList);
   };
   const handleDeleteCard = (index) => {
@@ -134,12 +136,14 @@ const CardListCreator = () => {
     if (cardColor === 'Multicolor') {
       const selectedColors = Object.keys(cardColors).filter(color => cardColors[color]);
       colorToSave = selectedColors.join('/');
+    } else if (cardColor === 'Colorless') { // Handle Colorless case
+      colorToSave = 'Colorless';
     }
 
     // Add cardType to the card object:
     setCardList([...cardList, {
       name: cardName,
-      number: cardNumber,
+      count: cardCount,
       type: cardType,
       color: colorToSave,
       landType: landType,
@@ -158,10 +162,14 @@ const CardListCreator = () => {
       Black: false,
       Red: false,
       Green: false,
-      None: false
+      Colorless: false
     });
     setLandType('');
     setLandTypeOptions([]);
+  };
+
+  const handleClearDeckList = () => {
+    setCardList([]); // Clear the card list
   };
 
   const handleInputChange = (event, newInputValue) => {
@@ -240,8 +248,12 @@ const CardListCreator = () => {
   const handleExportCSV = () => {
     if (cardList.length === 0) return;
 
-    const header = "Name,Number,Type,Color,Land Type\n"; // Add Land Type to header
-    const csvData = header + cardList.map(card => `${card.name},${card.number},${card.type},${card.color},${card.landType || ""}`).join('\n'); // Add landType to CSV data
+    const header = "Name,Count,Type,Color,Land Type\n";
+    const csvData = header + cardList.map(card => {
+      const escapedName = card.name.replace(/"/g, '""'); // Escape double quotes
+      return `"${escapedName}",${card.count},${card.type},${card.color},${card.landType || ""}`; // Enclose in double quotes
+    }).join('\n');
+
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
     saveAs(blob, 'card_list.csv');
   };
@@ -250,7 +262,7 @@ const CardListCreator = () => {
     setCardColors({ ...cardColors, [event.target.name]: event.target.checked });
   };
 
-  // Function to group cards by color, number, or type
+  // Function to group cards by color, card, or type
   const groupCards = (cards, option) => {
     const groupedCards = {};
     cards.forEach(card => {
@@ -259,8 +271,8 @@ const CardListCreator = () => {
         case 'color':
         groupKey = card.color;
         break;
-        case 'number':
-        groupKey = card.number;
+        case 'card':
+        groupKey = card.card;
         break;
         case 'type':
         groupKey = card.type; // Now card.type will be available
@@ -284,13 +296,14 @@ const CardListCreator = () => {
       <Typography variant="h5" sx={{ fontSize: { xs: '1.25rem', sm: '1.875rem' }, marginBottom: 2 }} gutterBottom>
         Deck List
       </Typography>
-      <Alert severity="info">
-        <AlertTitle>Heads Up!</AlertTitle>Scryfall integrations are a work in progress. If the Card Type or Color is incorrect, you may change it before adding the card to your deck list.
-      </Alert>
+      <MyAlert />
       <Card sx={{ marginBottom: 4 }}>
         <CardContent>
-          <Grid2 container spacing={{ xs: 2, md: 4 }} columns={{ xs: 1, sm: 2, md: 8}}>
-            <Grid2 item xs={12} md={3}>
+          <Typography variant="h5" component="div">
+            Add Cards
+          </Typography>
+          <Grid2 container spacing={{ xs: 2 }}>
+            <Grid2 item size={{ xs: 12, md: 4 }}>
               <Autocomplete
                 value={cardName}
                 inputValue={inputValue}  // Control input value
@@ -298,6 +311,7 @@ const CardListCreator = () => {
                 onInputChange={handleInputChange} // Handle input change
                 options={cardNameOptions}
                 freeSolo // Allow typing in values not in the options
+                fullWidth
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -326,98 +340,91 @@ const CardListCreator = () => {
                 }}
               />
             </Grid2>
-            <Grid2 item size={{ xs: 6, md: 1 }}>
+            <Grid2 item size={{ xs: 12, md: 1 }}>
               <TextField
                 label="Count"
                 type="number"
                 size="small"
-                value={cardNumber}
-                onChange={e => setCardNumber(Math.max(1, parseInt(e.target.value) || 1))} // Ensure at least 1
+                value={cardCount}
+                onChange={e => setCardCount(Math.max(1, parseInt(e.target.value) || 1))} // Ensure at least 1
               />
             </Grid2>
-            <Grid2 container size={{ xs: 12 }} spacing={2}>
-              <FormControl sx={{ minWidth: 175 }} size="small">
+          </Grid2>
+          <Grid2 container spacing={{ xs: 2 }} sx={{ paddingTop: 2 }}>
+            <Grid2 item spacing={2} size={{ xs: 12, md: 4 }}>
+              <FormControl sx={{ minWidth: 175 }} size="small" disabled>
                 <InputLabel id="card-type">Card Type</InputLabel>
-                  <Select
-                    labelId="card-type"
-                    id="card-type-select"
-                    value={cardType}
-                    label="Type"
-                    onChange={e => setCardType(e.target.value)}
-                  >
-                    <MenuItem value="Artifact">Artifact</MenuItem>,
-                    <MenuItem value="Battle">Battle</MenuItem>,
-                    <MenuItem value="Conspiracy">Conspiracy</MenuItem>,
-                    <MenuItem value="Creature">Creature</MenuItem>
-                    <MenuItem value="Dungeon">Dungeon</MenuItem>,
-                    <MenuItem value="Emblem">Emblem</MenuItem>,
-                    <MenuItem value="Enchantment">Enchantment</MenuItem>
-                    <MenuItem value="Hero">Hero</MenuItem>,
-                    <MenuItem value="Instant">Instant</MenuItem>
-                    <MenuItem value="Kindred">Kindred</MenuItem>,
-                    <MenuItem value="Land">Land</MenuItem>
-                    <MenuItem value="Phenomenon">Phenomenon</MenuItem>,
-                    <MenuItem value="Plane">Plane</MenuItem>,
-                    <MenuItem value="Planeswalker">Planeswalker</MenuItem>
-                    <MenuItem value="Scheme">Scheme</MenuItem>,
-                    <MenuItem value="Sorcery">Sorcery</MenuItem>
-                    <MenuItem value="Vanguard">Vanguard</MenuItem>,
-                  </Select>
-                </FormControl>
-                {cardType === 'Land' && (
-                  <FormControl sx={{ minWidth: 175 }} size="small" disabled>
-                    <InputLabel id="land-type-label">Land Type</InputLabel>
-                    <Select
-                      labelId="land-type-label"
-                      id="land-type-select"
-                      value={landType} // Value MUST be a valid option
-                      label="Land Type"
-                      onChange={e => setLandType(e.target.value)}
-                    >
-                      <MenuItem value="">{/* Add empty string option */}</MenuItem> {/* Important! */}
-                      {landTypeOptions.map(type => (
-                        <MenuItem key={type} value={type}>{type}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-                <FormControl sx={{ minWidth: 100 }} size="small">
-                  <InputLabel id="color-label">Color</InputLabel>
-                    <Select
-                    labelId="color-label"
-                    id="color-select"
-                    value={cardColor}
-                    label="Color"
-                    onChange={e => setCardColor(e.target.value)}
-                    >
-                      <MenuItem value="None">None</MenuItem>
-                      <MenuItem value="Colorless">Colorless</MenuItem>
-                      <MenuItem value="White">White <i className="ms ms-w"></i></MenuItem>
-                      <MenuItem value="Blue">Blue <i className="ms ms-u"></i></MenuItem>
-                      <MenuItem value="Black">Black <i className="ms ms-b"></i></MenuItem>
-                      <MenuItem value="Red">Red <i className="ms ms-r"></i></MenuItem>
-                      <MenuItem value="Green">Green <i className="ms ms-g"></i></MenuItem>
-                      <MenuItem value="Multicolor">Multicolor</MenuItem>
-                    </Select>
-                  </FormControl>
-                {cardColor === 'Multicolor' && ( // Conditionally render color checkboxes
-                  <FormControl component="fieldset">
-                    <FormGroup row>
-                      {Object.keys(cardColors).map(color => (
-                        <FormControlLabel
-                        key={color}
-                        control={<Checkbox checked={cardColors[color]} onChange={handleMulticolorChange} name={color} />}
-                        label={color}
-                        />
-                      ))}
-                    </FormGroup>
-                    <FormHelperText>Select the colors</FormHelperText>
-                  </FormControl>
-                )}
-              </Grid2>
-              <Divider component="div" />
+                <Select
+                  labelId="card-type"
+                  id="card-type-select"
+                  helperText="Card type populated by Card Name"
+                  value={cardType}
+                  label="Type"
+                  onChange={e => setCardType(e.target.value)}
+                >
+                  <MenuItem value="Artifact">Artifact</MenuItem>,
+                  <MenuItem value="Battle">Battle</MenuItem>,
+                  <MenuItem value="Conspiracy">Conspiracy</MenuItem>,
+                  <MenuItem value="Creature">Creature</MenuItem>
+                  <MenuItem value="Dungeon">Dungeon</MenuItem>,
+                  <MenuItem value="Emblem">Emblem</MenuItem>,
+                  <MenuItem value="Enchantment">Enchantment</MenuItem>
+                  <MenuItem value="Hero">Hero</MenuItem>,
+                  <MenuItem value="Instant">Instant</MenuItem>
+                  <MenuItem value="Kindred">Kindred</MenuItem>,
+                  <MenuItem value="Land">Land</MenuItem>
+                  <MenuItem value="Phenomenon">Phenomenon</MenuItem>,
+                  <MenuItem value="Plane">Plane</MenuItem>,
+                  <MenuItem value="Planeswalker">Planeswalker</MenuItem>
+                  <MenuItem value="Scheme">Scheme</MenuItem>,
+                  <MenuItem value="Sorcery">Sorcery</MenuItem>
+                  <MenuItem value="Vanguard">Vanguard</MenuItem>,
+                </Select>
+              </FormControl>
+              {/* Automatically selected by Scryfall */}
+              {cardType === 'Land' && (
+              <FormControl sx={{ marginLeft: 1, minWidth: 175 }} size="small" disabled>
+                <InputLabel id="land-type-label">Land Type</InputLabel>
+                <Select
+                  labelId="land-type-label"
+                  id="land-type-select"
+                  value={landType} // Value MUST be a valid option
+                  label="Land Type"
+                  onChange={e => setLandType(e.target.value)}
+                >
+                  <MenuItem value="">{/* Add empty string option */}</MenuItem> {/* Important! */}
+                  {landTypeOptions.map(type => (
+                    <MenuItem key={type} value={type}>{type}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              )}
             </Grid2>
-            <Grid2 item xs={12}>
+            <Grid2 item spacing={2} size={{ xs: 12, md: 3 }}>
+              <FormControl sx={{ minWidth: 100 }} size="small" disabled>
+                <InputLabel id="color-label">Color</InputLabel>
+                <Select
+                  labelId="color-label"
+                  id="color-select"
+                  value={cardColor}
+                  label="Color"
+                  onChange={e => setCardColor(e.target.value)}
+                >
+                  <MenuItem value="Colorless">Colorless</MenuItem> {/* Colorless Option */}
+                  <MenuItem value="White">White</MenuItem>
+                  <MenuItem value="Blue">Blue</MenuItem>
+                  <MenuItem value="Black">Black</MenuItem>
+                  <MenuItem value="Red">Red</MenuItem>
+                  <MenuItem value="Green">Green</MenuItem>
+                  <MenuItem value="Multicolor">Multicolor</MenuItem>
+                </Select>
+              </FormControl>
+              {/* {cardColor === 'Multicolor' && ( */}
+                <MyColorPicker cardColors={cardColors} setCardColors={setCardColors} />
+              {/* )} */}
+            </Grid2>
+          </Grid2>
+            <Grid2 item sx={{ paddingY: 2 }} xs={12}>
               <Button variant="contained" onClick={handleAddCard}>Add Card</Button>
             </Grid2>
           </CardContent>
@@ -435,7 +442,7 @@ const CardListCreator = () => {
               >
                 <MenuItem value="type">Type</MenuItem>
                 <MenuItem value="color">Color</MenuItem>
-                <MenuItem value="number">Number</MenuItem>
+                <MenuItem value="count">Count</MenuItem>
               </Select>
             </FormControl>
           </Grid2>
@@ -443,14 +450,16 @@ const CardListCreator = () => {
             <Button variant="outlined" startIcon={<FileDownloadIcon />} aria-label="export to csv" onClick={handleExportCSV} disabled={cardList.length === 0}>
               Download Deck List
             </Button>
+            <Button variant="text" aria-label="clear deck list" onClick={handleClearDeckList}>
+            Clear Deck List</Button>
           </Grid2>
         </Grid2>
         <Card>
           <CardContent>
             <Grid2 item xs={12}>
-              <Typography variant="h5">List:</Typography>
+              <Typography variant="h5" component="div">List</Typography>
               {Object.keys(groupedCardList).map(groupKey => (
-            <List key={groupKey}>
+              <List key={groupKey} subheader={<ListSubheader>{groupKey}</ListSubheader>}>
               {/* ... (groupKey JSX) */}
 
               {groupedCardList[groupKey].map((card, index) => (
@@ -470,12 +479,12 @@ const CardListCreator = () => {
                     </React.Fragment>
                   }
                   />
-                  {/* Number Input */}
+                  {/* Count Input */}
                   <TextField
                     type="number"
                     size="small"
-                    value={card.number}
-                    onChange={e => handleUpdateCardNumber(groupedCardList[groupKey].indexOf(card) + Object.keys(groupedCardList).slice(0, Object.keys(groupedCardList).indexOf(groupKey)).reduce((acc, curr) => acc + groupedCardList[curr].length, 0), e.target.value)} // Pass index and new value
+                    value={card.count}
+                    onChange={e => handleUpdateCardCount(groupedCardList[groupKey].indexOf(card) + Object.keys(groupedCardList).slice(0, Object.keys(groupedCardList).indexOf(groupKey)).reduce((acc, curr) => acc + groupedCardList[curr].length, 0), e.target.value)} // Pass index and new value
                     sx={{ width: '60px', margin: '0 8px' }} // Adjust width and add margin
                   />
                   {/* ... (Scryfall data JSX) */}
