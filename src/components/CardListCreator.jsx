@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, AlertTitle, Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, Divider, FormControl, FormGroup, FormHelperText, FormControlLabel, Grid2, IconButton, InputLabel, Link, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, AlertTitle, Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, Divider, FormControl, FormGroup, FormHelperText, FormControlLabel, Grid2, IconButton, InputLabel, List, ListItem, ListItemIcon, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { saveAs } from 'file-saver';
@@ -146,9 +146,22 @@ const CardListCreator = () => {
       scryfallData: selectedCardData // Store Scryfall data
     }]);
 
-    // ... (reset state after adding card, including landType)
-    setLandType(''); // Reset land type
-    setLandTypeOptions([]); // Reset land type options
+    // Clear the card name field and reset related state
+    setCardName('');
+    setInputValue(''); // Also clear the input value for the autocomplete
+    setCardNameError(false); // Clear any errors
+    setCardType(''); // or set to your default type
+    setCardColor(''); // or set to your default color
+    setCardColors({
+      White: false,
+      Blue: false,
+      Black: false,
+      Red: false,
+      Green: false,
+      None: false
+    });
+    setLandType('');
+    setLandTypeOptions([]);
   };
 
   const handleInputChange = (event, newInputValue) => {
@@ -368,7 +381,7 @@ const CardListCreator = () => {
                     </Select>
                   </FormControl>
                 )}
-                <FormControl sx={{ minWidth: 80 }} size="small">
+                <FormControl sx={{ minWidth: 100 }} size="small">
                   <InputLabel id="color-label">Color</InputLabel>
                     <Select
                     labelId="color-label"
@@ -437,12 +450,26 @@ const CardListCreator = () => {
             <Grid2 item xs={12}>
               <Typography variant="h5">List:</Typography>
               {Object.keys(groupedCardList).map(groupKey => (
-            <div key={groupKey}>
+            <List key={groupKey}>
               {/* ... (groupKey JSX) */}
 
               {groupedCardList[groupKey].map((card, index) => (
-                <div key={index} style={{ display: 'flex', alignItems: 'center' }}> {/* Add flexbox for alignment */}
-                  <strong>{card.name}</strong>
+                <ListItem key={index}> {/* Add flexbox for alignment */}
+                  <ListItemIcon>
+                    <img src={card.scryfallData.image_uris?.normal} alt={card.name} style={{ objectFit: 'contain', width: '50px' }} />
+                  </ListItemIcon>
+                  <ListItemText primary={card.name} secondary={
+                    <React.Fragment>
+                      <Typography
+                        component="span"
+                        variant="subtitle2"
+                        sx={{ display: 'inline' }}
+                      >
+                        {card.type}
+                      </Typography> - {card.color}
+                    </React.Fragment>
+                  }
+                  />
                   {/* Number Input */}
                   <TextField
                     type="number"
@@ -450,16 +477,16 @@ const CardListCreator = () => {
                     value={card.number}
                     onChange={e => handleUpdateCardNumber(groupedCardList[groupKey].indexOf(card) + Object.keys(groupedCardList).slice(0, Object.keys(groupedCardList).indexOf(groupKey)).reduce((acc, curr) => acc + groupedCardList[curr].length, 0), e.target.value)} // Pass index and new value
                     sx={{ width: '60px', margin: '0 8px' }} // Adjust width and add margin
-                  /> - {card.color} - {card.type}
+                  />
                   {/* ... (Scryfall data JSX) */}
 
                    {/* Delete Button */}
                   <IconButton aria-label="delete" onClick={() => handleDeleteCard(cardList.indexOf(card))}>
                     <DeleteIcon />
                   </IconButton>
-                </div>
+                </ListItem>
               ))}
-            </div>
+            </List>
           ))}
             </Grid2>
           </CardContent>
