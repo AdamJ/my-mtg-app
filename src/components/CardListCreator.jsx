@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, AlertTitle, Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, FormControl, FormGroup, FormControlLabel, Grid2, IconButton, InputLabel, List, ListItem, ListSubheader, ListItemIcon, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, AlertTitle, Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, FormControl, FormGroup, FormControlLabel, Grid2, IconButton, InputLabel, List, ListItem, ListSubheader, ListItemIcon, ListItemText, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { saveAs } from 'file-saver';
@@ -299,138 +299,147 @@ const CardListCreator = () => {
       <MyAlert />
       <Card sx={{ marginBottom: 4 }}>
         <CardContent>
-          <Typography variant="h5" component="div">
+          <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
             Add Cards
           </Typography>
-          <Grid2 container spacing={{ xs: 2 }}>
-            <Grid2 item size={{ xs: 12, md: 4 }}>
-              <Autocomplete
-                value={cardName}
-                inputValue={inputValue}  // Control input value
-                onChange={handleCardNameChange}
-                onInputChange={handleInputChange} // Handle input change
-                options={cardNameOptions}
-                freeSolo // Allow typing in values not in the options
-                fullWidth
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Card Name"
-                    fullWidth
-                    size="small"
-                    error={cardNameError}
-                    helperText={cardNameError ? "Card not found" : "Begin typing to search Scryfall"}
-                    required
-                    InputProps={{
-                      ...params.InputProps, // Spread existing InputProps
-                      endicon: loading ? <CircularProgress size={20} /> : null,
-                  }}
-                    sx={{
-                      minWidth: 300,
-                      '& .MuiInputLabel-root': { color: 'gray' },
-                      '& .MuiInoutLabel-shrink': { color: 'blue' }
-                    }}
-                    autoComplete="off"
-                  />
-                )}
-                // Case-insensitive filtering:
-                filterOptions={(options, params) => {
-                  const filter = params.inputValue.toLowerCase();
-                  return options.filter(option => option.toLowerCase().includes(filter));
-                }}
-              />
+            <Grid2 container spacing={{ xs: 2 }}>
+              <Grid2 item size={{ xs: 12 }}>
+                <Stack direction="row" spacing={2}>
+                  <FormControl sx={{ minWidth: 175 }} size="small" fullWidth>
+                    <Autocomplete
+                      value={cardName}
+                      inputValue={inputValue}  // Control input value
+                      onChange={handleCardNameChange}
+                      onInputChange={handleInputChange} // Handle input change
+                      options={cardNameOptions}
+                      freeSolo // Allow typing in values not in the options
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Card Name"
+                          size="small"
+                          error={cardNameError}
+                          helperText={cardNameError ? "Card not found" : "Begin typing to search Scryfall"}
+                          required
+                          InputProps={{
+                            ...params.InputProps, // Spread existing InputProps
+                            endicon: loading ? <CircularProgress size={20} /> : null,
+                        }}
+                          sx={{
+                            minWidth: 150,
+                            '& .MuiInputLabel-root': { color: 'gray' },
+                            '& .MuiInoutLabel-shrink': { color: 'blue' }
+                          }}
+                          autoComplete="off"
+                        />
+                      )}
+                      // Case-insensitive filtering:
+                      filterOptions={(options, params) => {
+                        const filter = params.inputValue.toLowerCase();
+                        return options.filter(option => option.toLowerCase().includes(filter));
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl size="small">
+                    <TextField
+                      label="Count"
+                      type="number"
+                      size="small"
+                      value={cardCount}
+                      onChange={e => setCardCount(Math.max(1, parseInt(e.target.value) || 1))} // Ensure at least 1
+                    />
+                  </FormControl>
+                </Stack>
+              </Grid2>
             </Grid2>
-            <Grid2 item size={{ xs: 12, md: 1 }}>
-              <TextField
-                label="Count"
-                type="number"
-                size="small"
-                value={cardCount}
-                onChange={e => setCardCount(Math.max(1, parseInt(e.target.value) || 1))} // Ensure at least 1
-              />
+            <Grid2 container spacing={{ xs: 2 }} sx={{ paddingTop: 2 }}>
+              {/* Card Type select */}
+              <Grid2 item spacing={2} size={{ xs: 12, md: 6 }}>
+                <Stack direction="row" spacing={2}>
+                  <FormControl sx={{ minWidth: 175 }} size="small" fullWidth disabled>
+                    <InputLabel id="card-type">Card Type</InputLabel>
+                    <Select
+                      labelId="card-type"
+                      id="card-type-select"
+                      helperText="Card type populated by Card Name"
+                      value={cardType}
+                      label="Type"
+                      onChange={e => setCardType(e.target.value)}
+                    >
+                      <MenuItem value="Artifact">Artifact</MenuItem>,
+                      <MenuItem value="Battle">Battle</MenuItem>,
+                      <MenuItem value="Conspiracy">Conspiracy</MenuItem>,
+                      <MenuItem value="Creature">Creature</MenuItem>
+                      <MenuItem value="Dungeon">Dungeon</MenuItem>,
+                      <MenuItem value="Emblem">Emblem</MenuItem>,
+                      <MenuItem value="Enchantment">Enchantment</MenuItem>
+                      <MenuItem value="Hero">Hero</MenuItem>,
+                      <MenuItem value="Instant">Instant</MenuItem>
+                      <MenuItem value="Kindred">Kindred</MenuItem>,
+                      <MenuItem value="Land">Land</MenuItem>
+                      <MenuItem value="Phenomenon">Phenomenon</MenuItem>,
+                      <MenuItem value="Plane">Plane</MenuItem>,
+                      <MenuItem value="Planeswalker">Planeswalker</MenuItem>
+                      <MenuItem value="Scheme">Scheme</MenuItem>,
+                      <MenuItem value="Sorcery">Sorcery</MenuItem>
+                      <MenuItem value="Vanguard">Vanguard</MenuItem>,
+                    </Select>
+                  </FormControl>
+                  {/* Automatically selected by Scryfall */}
+                  {cardType === 'Land' && (
+                  <FormControl sx={{ marginLeft: 1, minWidth: 175 }} size="small" fullWidth disabled>
+                    <InputLabel id="land-type-label">Land Type</InputLabel>
+                    <Select
+                      labelId="land-type-label"
+                      id="land-type-select"
+                      value={landType} // Value MUST be a valid option
+                      label="Land Type"
+                      onChange={e => setLandType(e.target.value)}
+                    >
+                      <MenuItem value="">{/* Add empty string option */}</MenuItem> {/* Important! */}
+                      {landTypeOptions.map(type => (
+                        <MenuItem key={type} value={type}>{type}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  )}
+                </Stack>
+              </Grid2>
+              {/* Color select */}
+              <Grid2 item size={{ xs: 12, md: 6 }}>
+                <Stack direction="row" spacing={2}>
+                  <FormControl sx={{ minWidth: 100 }} size="small" fullWidth disabled>
+                    <InputLabel id="color-label">Color</InputLabel>
+                    <Select
+                      labelId="color-label"
+                      id="color-select"
+                      value={cardColor}
+                      label="Color"
+                      onChange={e => setCardColor(e.target.value)}
+                    >
+                      <MenuItem value="Colorless">Colorless</MenuItem> {/* Colorless Option */}
+                      <MenuItem value="White">White</MenuItem>
+                      <MenuItem value="Blue">Blue</MenuItem>
+                      <MenuItem value="Black">Black</MenuItem>
+                      <MenuItem value="Red">Red</MenuItem>
+                      <MenuItem value="Green">Green</MenuItem>
+                      <MenuItem value="Multicolor">Multicolor</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {/* {cardColor === 'Multicolor' && ( */}
+                    <MyColorPicker cardColors={cardColors} setCardColors={setCardColors} />
+                  {/* )} */}
+                </Stack>
+              </Grid2>
             </Grid2>
-          </Grid2>
-          <Grid2 container spacing={{ xs: 2 }} sx={{ paddingTop: 2 }}>
-            <Grid2 item spacing={2} size={{ xs: 12, md: 4 }}>
-              <FormControl sx={{ minWidth: 175 }} size="small" disabled>
-                <InputLabel id="card-type">Card Type</InputLabel>
-                <Select
-                  labelId="card-type"
-                  id="card-type-select"
-                  helperText="Card type populated by Card Name"
-                  value={cardType}
-                  label="Type"
-                  onChange={e => setCardType(e.target.value)}
-                >
-                  <MenuItem value="Artifact">Artifact</MenuItem>,
-                  <MenuItem value="Battle">Battle</MenuItem>,
-                  <MenuItem value="Conspiracy">Conspiracy</MenuItem>,
-                  <MenuItem value="Creature">Creature</MenuItem>
-                  <MenuItem value="Dungeon">Dungeon</MenuItem>,
-                  <MenuItem value="Emblem">Emblem</MenuItem>,
-                  <MenuItem value="Enchantment">Enchantment</MenuItem>
-                  <MenuItem value="Hero">Hero</MenuItem>,
-                  <MenuItem value="Instant">Instant</MenuItem>
-                  <MenuItem value="Kindred">Kindred</MenuItem>,
-                  <MenuItem value="Land">Land</MenuItem>
-                  <MenuItem value="Phenomenon">Phenomenon</MenuItem>,
-                  <MenuItem value="Plane">Plane</MenuItem>,
-                  <MenuItem value="Planeswalker">Planeswalker</MenuItem>
-                  <MenuItem value="Scheme">Scheme</MenuItem>,
-                  <MenuItem value="Sorcery">Sorcery</MenuItem>
-                  <MenuItem value="Vanguard">Vanguard</MenuItem>,
-                </Select>
-              </FormControl>
-              {/* Automatically selected by Scryfall */}
-              {cardType === 'Land' && (
-              <FormControl sx={{ marginLeft: 1, minWidth: 175 }} size="small" disabled>
-                <InputLabel id="land-type-label">Land Type</InputLabel>
-                <Select
-                  labelId="land-type-label"
-                  id="land-type-select"
-                  value={landType} // Value MUST be a valid option
-                  label="Land Type"
-                  onChange={e => setLandType(e.target.value)}
-                >
-                  <MenuItem value="">{/* Add empty string option */}</MenuItem> {/* Important! */}
-                  {landTypeOptions.map(type => (
-                    <MenuItem key={type} value={type}>{type}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              )}
-            </Grid2>
-            <Grid2 item spacing={2} size={{ xs: 12, md: 3 }}>
-              <FormControl sx={{ minWidth: 100 }} size="small" disabled>
-                <InputLabel id="color-label">Color</InputLabel>
-                <Select
-                  labelId="color-label"
-                  id="color-select"
-                  value={cardColor}
-                  label="Color"
-                  onChange={e => setCardColor(e.target.value)}
-                >
-                  <MenuItem value="Colorless">Colorless</MenuItem> {/* Colorless Option */}
-                  <MenuItem value="White">White</MenuItem>
-                  <MenuItem value="Blue">Blue</MenuItem>
-                  <MenuItem value="Black">Black</MenuItem>
-                  <MenuItem value="Red">Red</MenuItem>
-                  <MenuItem value="Green">Green</MenuItem>
-                  <MenuItem value="Multicolor">Multicolor</MenuItem>
-                </Select>
-              </FormControl>
-              {/* {cardColor === 'Multicolor' && ( */}
-                <MyColorPicker cardColors={cardColors} setCardColors={setCardColors} />
-              {/* )} */}
-            </Grid2>
-          </Grid2>
             <Grid2 item sx={{ paddingY: 2 }} xs={12}>
               <Button variant="contained" onClick={handleAddCard}>Add Card</Button>
             </Grid2>
           </CardContent>
         </Card>
-        <Grid2 container spacing={{ xs: 2, md: 4 }} columns={{ xs: 1, sm: 2, md: 8}} sx={{ margin: 2 }}>
-          <Grid2 item xs={4}>
+        {/* Group by, Clear, Download */}
+        <Grid2 container spacing={2} columns={{ xs: 1, sm: 2, md: 12}} sx={{ margin: 2 }}>
+          <Grid2 item size={{ xs: 4 }}>
             <FormControl sx={{ minWidth: 120 }} size="small">
               <InputLabel id="grouping-label">Group By</InputLabel>
               <Select
@@ -438,6 +447,7 @@ const CardListCreator = () => {
                 id="grouping-select"
                 value={groupingOption}
                 label="Group By"
+                autoWidth
                 onChange={e => setGroupingOption(e.target.value)}
               >
                 <MenuItem value="type">Type</MenuItem>
@@ -446,12 +456,12 @@ const CardListCreator = () => {
               </Select>
             </FormControl>
           </Grid2>
-          <Grid2 item xs={4}>
+          <Grid2 display="flex" justifyContent="end" item size={{ xs: 8 }}>
+            <Button variant="text" aria-label="clear deck list" onClick={handleClearDeckList}>
+            Clear Deck List</Button>
             <Button variant="outlined" startIcon={<FileDownloadIcon />} aria-label="export to csv" onClick={handleExportCSV} disabled={cardList.length === 0}>
               Download Deck List
             </Button>
-            <Button variant="text" aria-label="clear deck list" onClick={handleClearDeckList}>
-            Clear Deck List</Button>
           </Grid2>
         </Grid2>
         <Card>

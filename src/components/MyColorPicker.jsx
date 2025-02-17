@@ -30,7 +30,7 @@ const MyColorPicker = ({ cardColors, setCardColors, colorType }) => { // Now rec
   };
 
   return (
-    <FormControl sx={{ marginLeft: 1, minWidth: 140 }} size="small" disabled={colorType !== 'Multicolor'}>
+    <FormControl sx={{ marginLeft: 1, minWidth: 100 }} size="small" fullWidth disabled={colorType !== 'Multicolor'}>
       <InputLabel id="multiple-chip-label">Colors</InputLabel>
       <Select
         labelId="multiple-chip-label"
