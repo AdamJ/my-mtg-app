@@ -6,7 +6,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
 const MyAlert = () => {
-  const [open, setOpen] = React.useState(true);
+  const [setOpen] = React.useState(true);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false); // For optional snackbar feedback
   const [acknowledged, setAcknowledged] = React.useState(localStorage.getItem('scryfallAlertAcknowledged') === 'true');
 

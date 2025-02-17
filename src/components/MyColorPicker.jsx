@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
@@ -27,6 +28,12 @@ const MyColorPicker = ({ cardColors, setCardColors, colorType }) => { // Now rec
       });
       return newColors;
     });
+  };
+
+  MyColorPicker.propTypes = {  // Define prop types
+    cardColors: PropTypes.object.isRequired, // cardColors should be an object and is required
+    setCardColors: PropTypes.func.isRequired, // setCardColors should be a function and is required
+    colorType: PropTypes.string.isRequired, // colorType should be a string and is required
   };
 
   return (
