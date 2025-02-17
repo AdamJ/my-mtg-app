@@ -1,28 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, AlertTitle, Autocomplete, Box, Button, Card, CardContent, Checkbox, CircularProgress, FormControl, FormGroup, FormControlLabel, Grid2, IconButton, InputLabel, List, ListItem, ListSubheader, ListItemIcon, ListItemText, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Button, Card, CardContent, CircularProgress, FormControl, Grid2, IconButton, InputLabel, List, ListItem, ListSubheader, ListItemIcon, ListItemText, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { saveAs } from 'file-saver';
-import axios from 'axios';
+// import axios from 'axios';
 import localForage from 'localforage';
 import MyAlert from './MyAlerts';
 import MyColorPicker from './MyColorPicker'; // Import the ColorPicker
+import cardDataLocal from '../assets/card_data.json'; // Import your local JSON data
 
-localForage.config({
-  driver: localForage.INDEXEDDB, // Use IndexedDB
-  name: 'scryfallOracleCardsCache' // Distinct name for oracle cards
-});
+// only for using scryfall api
+// localForage.config({
+//   driver: localForage.INDEXEDDB, // Use IndexedDB
+//   name: 'scryfallOracleCardsCache' // Distinct name for oracle cards
+// });
 
 const CardListCreator = () => {
 
-  const [cardData, setCardData] = useState({}); // Store Scryfall card data
-  const [loading, setLoading] = useState(false); // Loading state for API calls
+  const [cardData, setCardData] = useState({}); // Store card data
   const [cardNameOptions, setCardNameOptions] = useState([]); // Autocomplete options
+  const [loading, setLoading] = useState(false);
   const [cardName, setCardName] = useState('');
   const [inputValue, setInputValue] = useState("");
   const [cardCount, setCardCount] = useState(1);
   const [cardType, setCardType] = useState('Creature');
-  const [cardColor, setCardColor] = useState('Colorless');
+  const [cardColor, setCardColor] = useState('');
   const [landType, setLandType] = useState(''); // State for land type
   const [landTypeOptions, setLandTypeOptions] = useState([]); // Options for land type
   const [cardColors, setCardColors] = useState({
@@ -76,47 +78,73 @@ const CardListCreator = () => {
     saveCardList();
   }, [cardList]);
 
+  // only for using local json card data
   useEffect(() => {
-    const loadCardData = async () => {
-      setLoading(true);
-      try {
-        const storedCardData = await localForage.getItem('scryfallOracleCardData');
-        const storedCardNames = await localForage.getItem('scryfallOracleCardNames');
+    setLoading(true); // Set loading to true while processing
+    try {
+      // Load card data from the local JSON file
+      const cardDataByName = {};
+      const nameOptions = new Set();
 
-        if (storedCardData && storedCardNames) {
-          setCardData(storedCardData);
-          setCardNameOptions(storedCardNames);
-          console.log("Loaded oracle card data from IndexedDB");
-        } else {
-          const response = await axios.get('https://api.scryfall.com/bulk-data/oracle-cards');
-          const bulkDataUrl = response.data.download_uri; // Correct path for oracle-cards
+      cardDataLocal.forEach(card => { // Iterate through the imported data
+        cardDataByName[card.name] = card;
+        nameOptions.add(card.name);
+      });
 
-          const cardDataResponse = await axios.get(bulkDataUrl);
-          const allCards = cardDataResponse.data;
+      setCardData(cardDataByName);
+      setCardNameOptions(Array.from(nameOptions));
+      console.log("Loaded card data from local JSON");
 
-          const cardDataByName = {};
-          const nameOptions = new Set();
-          allCards.forEach(card => {
-            cardDataByName[card.name] = card;
-            nameOptions.add(card.name);
-          });
+    } catch (error) {
+      console.error("Error loading card data from local JSON:", error);
+    } finally {
+      setLoading(false); // Set loading to false after processing
+    }
 
-          await localForage.setItem('scryfallOracleCardData', cardDataByName);
-          await localForage.setItem('scryfallOracleCardNames', Array.from(nameOptions));
-          console.log("Fetched and stored oracle card data in IndexedDB");
+  }, []); // Empty dependency array ensures this runs only once on mount
 
-          setCardData(cardDataByName);
-          setCardNameOptions(Array.from(nameOptions));
-        }
-      } catch (error) {
-        console.error("Error fetching or loading oracle card data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // only for using Scryfall API
+  // useEffect(() => {
+  //   const loadCardData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const storedCardData = await localForage.getItem('scryfallOracleCardData');
+  //       const storedCardNames = await localForage.getItem('scryfallOracleCardNames');
 
-    loadCardData();
-  }, []);
+  //       if (storedCardData && storedCardNames) {
+  //         setCardData(storedCardData);
+  //         setCardNameOptions(storedCardNames);
+  //         console.log("Loaded oracle card data from IndexedDB");
+  //       } else {
+  //         const response = await axios.get('https://api.scryfall.com/bulk-data/oracle-cards');
+  //         const bulkDataUrl = response.data.download_uri; // Correct path for oracle-cards
+
+  //         const cardDataResponse = await axios.get(bulkDataUrl);
+  //         const allCards = cardDataResponse.data;
+
+  //         const cardDataByName = {};
+  //         const nameOptions = new Set();
+  //         allCards.forEach(card => {
+  //           cardDataByName[card.name] = card;
+  //           nameOptions.add(card.name);
+  //         });
+
+  //         await localForage.setItem('scryfallOracleCardData', cardDataByName);
+  //         await localForage.setItem('scryfallOracleCardNames', Array.from(nameOptions));
+  //         console.log("Fetched and stored oracle card data in IndexedDB");
+
+  //         setCardData(cardDataByName);
+  //         setCardNameOptions(Array.from(nameOptions));
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching or loading oracle card data:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   loadCardData();
+  // }, []);
 
   const handleAddCard = () => {
     if (cardName.trim() === '') {
@@ -145,7 +173,7 @@ const CardListCreator = () => {
       name: cardName,
       count: cardCount,
       type: cardType,
-      color: colorToSave,
+      color: cardColor,
       landType: landType,
       scryfallData: selectedCardData // Store Scryfall data
     }]);
@@ -221,17 +249,51 @@ const CardListCreator = () => {
       }
 
       // Set Card Color (only if NOT a land)
-      const colors = selectedCard.colors?.map(color => ({ W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green', N: 'None' }[color])) || ['Colorless'];
-      setCardColor(colors.length > 1 ? 'Multicolor' : colors[0]);
+      const colors = selectedCard.colors || [];
 
-      const newCardColors = { White: false, Blue: false, Black: false, Red: false, Green: false, None: false };
-      colors.forEach(color => newCardColors[color] = true);
+    if (colors.length === 0) { // Handle Colorless (empty array)
+      setCardColor(''); // Or a specific value like "None" if you prefer
+      setCardColors({
+        White: false,
+        Blue: false,
+        Black: false,
+        Red: false,
+        Green: false,
+        Colorless: false, // Keep Colorless as false
+        Multicolor: false,
+      });
+    } else if (colors.length === 1) {
+      const colorMap = { W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green' };
+      const color = colorMap[colors[0]] || ''; // Handle unknown codes (empty string)
+      setCardColor(color);
+      setCardColors({
+        White: color === 'White',
+        Blue: color === 'Blue',
+        Black: color === 'Black',
+        Red: color === 'Red',
+        Green: color === 'Green',
+        Colorless: false, // Keep Colorless as false
+        Multicolor: false,
+      });
+    } else { // Multicolor
+      const colorNames = colors.map(code => colorMap[code] || ''); // Handle unknown codes
+      setCardColor('Multicolor');
+      const newCardColors = {
+        White: colorNames.includes('White'),
+        Blue: colorNames.includes('Blue'),
+        Black: colorNames.includes('Black'),
+        Red: colorNames.includes('Red'),
+        Green: colorNames.includes('Green'),
+        Colorless: false, // Keep Colorless as false
+        Multicolor: true,
+      };
       setCardColors(newCardColors);
+    }
 
     } else {
       setCardNameError(true);
-      setCardType('Artifact');
-      setCardColor('Colorless');
+      setCardType('');
+      setCardColor('');
       setCardColors({
         White: false,
         Blue: false,
@@ -356,15 +418,19 @@ const CardListCreator = () => {
               {/* Card Type select */}
               <Grid2 item spacing={2} size={{ xs: 12, md: 6 }}>
                 <Stack direction="row" spacing={2}>
-                  <FormControl sx={{ minWidth: 175 }} size="small" fullWidth disabled>
+                {loading ? ( // Show a loading indicator while data is loading
+                  <CircularProgress /> // Or any other loading indicator you prefer
+                  ) : ( // Render the Selects ONLY after loading is complete
+                  <FormControl sx={{ minWidth: 175 }} size="small" fullWidth disabled={!cardName}>
                     <InputLabel id="card-type">Card Type</InputLabel>
                     <Select
                       labelId="card-type"
                       id="card-type-select"
-                      helperText="Card type populated by Card Name"
+                      label="Card Type"
                       value={cardType}
-                      label="Type"
                       onChange={e => setCardType(e.target.value)}
+                      disabled
+                      // displayEmpty // Important: Add this to handle the initial empty state
                     >
                       <MenuItem value="Artifact">Artifact</MenuItem>,
                       <MenuItem value="Battle">Battle</MenuItem>,
@@ -385,6 +451,7 @@ const CardListCreator = () => {
                       <MenuItem value="Vanguard">Vanguard</MenuItem>,
                     </Select>
                   </FormControl>
+                )}
                   {/* Automatically selected by Scryfall */}
                   {cardType === 'Land' && (
                   <FormControl sx={{ marginLeft: 1, minWidth: 175 }} size="small" fullWidth disabled>
