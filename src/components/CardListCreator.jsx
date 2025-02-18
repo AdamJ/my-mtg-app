@@ -40,7 +40,6 @@ const CardListCreator = () => {
   const [cardList, setCardList] = useState([]);
   const [cardCounts, setCardCounts] = useState({});
   const [cardNameError, setCardNameError] = useState(false);
-  const [cardRarityError, setCardRarityError] = useState(false);
   const [groupingOption, setGroupingOption] = useState('type');
   const [selectedCard, setSelectedCard] = useState(null);
 
@@ -154,7 +153,7 @@ const CardListCreator = () => {
     };
 
     return (
-      <Typography sx={{ display: 'inline-block', borderRadius: '50rem', marginLeft: '6px', backgroundColor: "#454545", paddingX: '6px', paddingY: '4px' }}>
+      <Typography sx={{ display: 'inline-block', borderRadius: '50rem', marginLeft: '6px', backgroundColor: "#454545", color: '#ddd', paddingX: '6px', paddingY: '4px' }}>
         {colors.map((colorCode, index) => (
           <span key={index} title={colorMap[colorCode]?.type || colorCode}>
             {colorMap[colorCode]}
@@ -228,7 +227,6 @@ const CardListCreator = () => {
       const selectedCardData = cardData[newValue];
       setSelectedCard(selectedCardData);
       setCardNameError(false);
-      setCardRarityError(false);
       setCardType(selectedCardData.type_line);
 
       const typeMatches = {
@@ -308,7 +306,6 @@ const CardListCreator = () => {
       }
     } else {
       setCardNameError(true);
-      setCardRarityError('');
       setCardType('');
       setCardColor('');
       setCardColors({
