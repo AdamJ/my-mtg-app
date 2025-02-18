@@ -23,6 +23,7 @@ const CardListCreator = () => {
   const [cardNumber, setCardNumber] = useState(1);
   // const [cardCount, setCardCount] = useState(1);
   const [cardType, setCardType] = useState('');
+  const [cardRarity, setCardRarity] = useState('');
   // const [cardTypes, setCardTypes] = useState([]);
   const [cardColor, setCardColor] = useState('');
   const [landType, setLandType] = useState('');
@@ -39,6 +40,7 @@ const CardListCreator = () => {
   const [cardList, setCardList] = useState([]);
   const [cardCounts, setCardCounts] = useState({});
   const [cardNameError, setCardNameError] = useState(false);
+  const [cardRarityError, setCardRarityError] = useState(false);
   const [groupingOption, setGroupingOption] = useState('type');
   const [selectedCard, setSelectedCard] = useState(null);
 
@@ -57,13 +59,6 @@ const CardListCreator = () => {
     };
     loadCardList();
   }, []);
-
-  // const handleUpdateCardCount = (index, newCount) => {
-  //   const updatedCardList = [...cardList];
-  //   updatedCardList[index].count = Math.max(1, parseInt(newCount) || 1);
-  //   setCardList(updatedCardList);
-  // };
-
 
   const handleUpdateCardNumber = (card, newNumber) => {
     setCardCounts(prevCounts => ({
@@ -131,8 +126,6 @@ const CardListCreator = () => {
 
       setCardData(cardDataByName);
       setCardNameOptions(Array.from(nameOptions));
-      // setCardTypes(Array.from(uniqueCardTypes));
-      // setCardColorOptions(Array.from(uniqueCardColors));
 
     } catch (error) {
       console.error("Error loading card data from local JSON:", error);
@@ -193,6 +186,7 @@ const CardListCreator = () => {
 
     setCardList([...cardList, {
       name: cardName,
+      rarity: cardRarity,
       number: cardNumber,
       type: cardType,
       color: colorToSave,
@@ -201,6 +195,7 @@ const CardListCreator = () => {
     }]);
 
     setCardName('');
+    setCardRarity('');
     setInputValue('');
     setCardNameError(false);
     setCardType('');
@@ -214,7 +209,6 @@ const CardListCreator = () => {
       Colorless: false
     });
     setLandType('');
-    // setLandTypeOptions([]);
     setSelectedCard(null);
   };
 
@@ -234,6 +228,7 @@ const CardListCreator = () => {
       const selectedCardData = cardData[newValue];
       setSelectedCard(selectedCardData);
       setCardNameError(false);
+      setCardRarityError(false);
       setCardType(selectedCardData.type_line);
 
       const typeMatches = {
@@ -259,7 +254,6 @@ const CardListCreator = () => {
       setCardType(foundType || "Other");
 
       if (selectedCardData.type_line.includes("Land")) {
-        // setLandTypeOptions([]);
         setLandType('');
         setCardColor('');
         setCardColors({
@@ -272,7 +266,6 @@ const CardListCreator = () => {
         });
         return;
       } else {
-        // setLandTypeOptions([]);
         setLandType('');
       }
 
@@ -315,6 +308,7 @@ const CardListCreator = () => {
       }
     } else {
       setCardNameError(true);
+      setCardRarityError('');
       setCardType('');
       setCardColor('');
       setCardColors({
@@ -334,10 +328,10 @@ const CardListCreator = () => {
   const handleExportCSV = () => {
     if (cardList.length === 0) return;
 
-    const header = "Name,Count,Type,Color,Land Type\n";
+    const header = "Name,Rarity,Count,Type,Color,Land Type\n";
     const csvData = header + cardList.map(card => {
       const escapedName = card.name.replace(/"/g, '""');
-      return `"${escapedName}",${card.count},${card.type},${card.color},${card.landType || ""}`;
+      return `"${escapedName}",${card.rarity},${card.count},${card.type},${card.color},${card.landType || ""}`;
     }).join('\n');
 
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
@@ -505,11 +499,16 @@ const CardListCreator = () => {
                             {card.type}
                           </Typography>
                           </span>,
+                          <span key="2">
+                          <Typography component="span" variant="caption" sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px', textTransform: 'capitalize' }} color="text.secondary">
+                            {card.scryfallData?.rarity}
+                          </Typography>
+                          </span>,
                           card.scryfallData?.color_identity && (
-                            <span key="2">{renderColorIdentityIcons(card.scryfallData?.color_identity)}</span>
+                            <span key="3">{renderColorIdentityIcons(card.scryfallData?.color_identity)}</span>
                           ),
                           card.scryfallData?.produced_mana && (
-                            <span key="3">
+                            <span key="4">
                             <Typography component="span" variant="caption" sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px' }} color="text.secondary">
                               Produces: {renderColorIdentityIcons(card.scryfallData?.produced_mana)}
                             </Typography>
