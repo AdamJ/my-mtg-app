@@ -82,7 +82,7 @@ define(['./workbox-d9a5ed57'], (function (workbox) { 'use strict';
     "revision": "e566a608d0e7f7fe99948f16f10a9a85"
   }, {
     "url": "index.html",
-    "revision": "0.lemdf32vqqg"
+    "revision": "0.kgngvtf5oio"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
@@ -90,9 +90,7 @@ define(['./workbox-d9a5ed57'], (function (workbox) { 'use strict';
   }));
   workbox.registerRoute(({
     url
-  }) => {
-    return !!url.pathname.match(/^.*\.(?:eot|otf|woff|woff2|ttf|svg|png|jpe?g|gif|webp|ico|webm|mp3|mp4)$/i);
-  }, new workbox.CacheFirst({
+  }) => !!url.pathname.match(/^.*\.(?:eot|otf|woff|woff2|ttf|svg|png|jpe?g|gif|webp|ico|webm|mp3|mp4)$/i), new workbox.CacheFirst({
     "cacheName": "static-resources",
     plugins: [new workbox.ExpirationPlugin({
       maxEntries: 30,
@@ -101,3 +99,4 @@ define(['./workbox-d9a5ed57'], (function (workbox) { 'use strict';
   }), 'GET');
 
 }));
+//# sourceMappingURL=sw.js.map

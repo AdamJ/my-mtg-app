@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Autocomplete, Avatar, Box, Button, Card, CardContent, CircularProgress, FormControl, Grid2, IconButton, InputLabel, List, ListItem, ListSubheader, ListItemAvatar, ListItemText, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -13,6 +14,17 @@ import MountainIcon from './icons/MountainIcon';
 import SwampIcon from './icons/SwampIcon';
 import ColorlessIcon from './icons/ColorlessIcon';
 
+localForage.config({
+  driver: localForage.INDEXEDDB, // Use IndexedDB
+  name: 'scryfallOracleCardsCache' // Distinct name for oracle cards
+});
+
+const api = axios.create({
+  baseURL: import.meta.env.MODE === 'production'
+    ? import.meta.env.VITE_API_URL || "https://api.scryfall.com/bulk-data/oracle-cards" // Production URL
+    : import.meta.env.VITE_API_URL || "./src/assets/card_data.json" // Development URL
+});
+
 const CardListCreator = () => {
 
   const [cardData, setCardData] = useState({});
@@ -21,13 +33,10 @@ const CardListCreator = () => {
   const [cardName, setCardName] = useState('');
   const [inputValue, setInputValue] = useState("");
   const [cardNumber, setCardNumber] = useState(1);
-  // const [cardCount, setCardCount] = useState(1);
   const [cardType, setCardType] = useState('');
   const [cardRarity, setCardRarity] = useState('');
-  // const [cardTypes, setCardTypes] = useState([]);
   const [cardColor, setCardColor] = useState('');
   const [landType, setLandType] = useState('');
-  // const [landTypeOptions, setLandTypeOptions] = useState([]);
   const [cardColors, setCardColors] = useState({
     White: false,
     Blue: false,
@@ -36,7 +45,6 @@ const CardListCreator = () => {
     Green: false,
     Colorless: false,
   });
-  // const [cardColorOptions, setCardColorOptions] = useState([]);
   const [cardList, setCardList] = useState([]);
   const [cardCounts, setCardCounts] = useState({});
   const [cardNameError, setCardNameError] = useState(false);
@@ -98,7 +106,6 @@ const CardListCreator = () => {
     try {
       const cardDataByName = {};
       const nameOptions = new Set();
-      // const uniqueCardTypes = new Set();
       const uniqueCardColors = new Set();
 
       cardDataLocal.forEach(card => {
@@ -133,12 +140,56 @@ const CardListCreator = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const loadCardData = async () => {
+      setLoading(true);
+      try {
+        const storedCardData = await localForage.getItem('scryfallOracleCardData');
+        const storedCardNames = await localForage.getItem('scryfallOracleCardNames');
+
+        if (storedCardData && storedCardNames) {
+          setCardData(storedCardData);
+          setCardNameOptions(storedCardNames);
+          console.log("Loaded oracle card data from IndexedDB");
+        } else {
+          const response = await api.get('https://api.scryfall.com/bulk-data/oracle-cards');
+          const bulkDataUrl = response.data.download_uri; // Correct path for oracle-cards
+
+          const cardDataResponse = await api.get(bulkDataUrl);
+          const allCards = cardDataResponse.data;
+
+          const cardDataByName = {};
+          const nameOptions = new Set();
+          allCards.forEach(card => {
+            cardDataByName[card.name] = card;
+            nameOptions.add(card.name);
+          });
+
+          await localForage.setItem('scryfallOracleCardData', cardDataByName);
+          await localForage.setItem('scryfallOracleCardNames', Array.from(nameOptions));
+          console.log("Fetched and stored oracle card data in IndexedDB");
+
+          setCardData(cardDataByName);
+          setCardNameOptions(Array.from(nameOptions));
+        }
+      } catch (error) {
+        console.error("Error fetching or loading oracle card data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCardData();
+  }, []);
+
   const renderColorIdentityIcons = (colors) => {
     if (!colors || colors.length === 0) {
       return (
+      <span>
       <Typography sx={{ display: 'inline-block', borderRadius: '50rem', marginLeft: '6px', backgroundColor: '#454545', color: '#ddd', paddingX: '6px', paddingY: '2px' }}>
         <ColorlessIcon />
       </Typography>
+      </span>
       );
     }
 
@@ -153,6 +204,7 @@ const CardListCreator = () => {
     };
 
     return (
+      <span>
       <Typography sx={{ display: 'inline-block', borderRadius: '50rem', marginLeft: '6px', backgroundColor: "#454545", color: '#ddd', paddingX: '6px', paddingY: '4px' }}>
         {colors.map((colorCode, index) => (
           <span key={index} title={colorMap[colorCode]?.type || colorCode}>
@@ -160,6 +212,7 @@ const CardListCreator = () => {
           </span>
         ))}
       </Typography>
+      </span>
     );
   };
 
@@ -316,7 +369,6 @@ const CardListCreator = () => {
         Green: false,
         Colorless: false,
       });
-      // setLandTypeOptions([]);
       setLandType('');
       setSelectedCard(null);
     }
@@ -343,9 +395,6 @@ const CardListCreator = () => {
         case 'color':
           groupKey = card.color;
           break;
-        // case 'count':
-        //   groupKey = card.count; // Group by card name
-        //   break;
         case 'type':
           groupKey = card.type;
           break;
@@ -382,9 +431,9 @@ const CardListCreator = () => {
                       value={cardName}
                       inputValue={inputValue}  // Control input value
                       onChange={handleCardNameChange}
-                      onInputChange={handleInputChange} // Handle input change
+                      onInputChange={handleInputChange}
                       options={cardNameOptions}
-                      freeSolo // Allow typing in values not in the options
+                      freeSolo
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -394,7 +443,7 @@ const CardListCreator = () => {
                           helperText={cardNameError ? "Card not found" : "Begin typing to search Scryfall"}
                           required
                           InputProps={{
-                            ...params.InputProps, // Spread existing InputProps
+                            ...params.InputProps,
                             endicon: loading ? <CircularProgress size={20} /> : null,
                         }}
                           sx={{
@@ -405,7 +454,6 @@ const CardListCreator = () => {
                           autoComplete="off"
                         />
                       )}
-                      // Case-insensitive filtering:
                       filterOptions={(options, params) => {
                         const filter = params.inputValue.toLowerCase();
                         return options.filter(option => option.toLowerCase().includes(filter));
@@ -444,7 +492,6 @@ const CardListCreator = () => {
               >
                 <MenuItem value="type">Type</MenuItem>
                 <MenuItem value="color">Color</MenuItem>
-                {/* <MenuItem value="count">Count</MenuItem> */}
               </Select>
             </FormControl>
           </Grid2>
@@ -462,7 +509,7 @@ const CardListCreator = () => {
             <List>
           {Object.keys(groupedCardList).map(groupKey => (
                 <List key={groupKey} subheader={
-                  <ListSubheader><strong>{groupKey}</strong></ListSubheader>
+                  <ListSubheader component="div" id={groupKey}>{groupKey}</ListSubheader>
                 }>
                   {groupedCardList[groupKey].map((card) => (
                     <ListItem key={card.name}
