@@ -2,9 +2,13 @@
   "name": "my-mtg-app",
   "homepage": "/my-mtg-app/",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.5.0",
   "type": "module",
   "versionHistory": [
+    {
+      "version": "0.5.0",
+      "date": "2025-02-18"
+    },
     {
       "version": "0.4.0",
       "date": "2025-02-12"
@@ -32,6 +36,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "ignoreData": "rm -rf src/assets/card_data.json",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
