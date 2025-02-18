@@ -477,13 +477,14 @@ const CardListCreator = () => {
                     <ListItem key={card.name}
                       secondaryAction={[
                         <TextField
+                          key="1"
                           type="number"
                           size="small"
                           value={cardCounts[card.name] || card.number || 1}
                           onChange={e => handleUpdateCardNumber(card, e.target.value)}
                           sx={{ width: '60px', margin: '0 8px' }}
                         />,
-                        <IconButton edge="end" color="error" onClick={() => handleDeleteCard(card)}>
+                        <IconButton key="2" edge="end" color="error" onClick={() => handleDeleteCard(card)}>
                           <DeleteIcon />
                         </IconButton>
                       ]}>
