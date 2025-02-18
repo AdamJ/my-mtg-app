@@ -24,7 +24,7 @@ export default function MountainIcon() {
   return (
     <ThemeProvider theme={manaIcon}>
       <Icon
-        className="ms-m"
+        className="ms-r"
       />
     </ThemeProvider>
   );

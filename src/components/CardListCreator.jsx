@@ -20,7 +20,8 @@ const CardListCreator = () => {
   const [loading, setLoading] = useState(false);
   const [cardName, setCardName] = useState('');
   const [inputValue, setInputValue] = useState("");
-  const [cardCount, setCardCount] = useState(1);
+  const [cardNumber, setCardNumber] = useState(1);
+  // const [cardCount, setCardCount] = useState(1);
   const [cardType, setCardType] = useState('');
   // const [cardTypes, setCardTypes] = useState([]);
   const [cardColor, setCardColor] = useState('');
@@ -36,6 +37,7 @@ const CardListCreator = () => {
   });
   // const [cardColorOptions, setCardColorOptions] = useState([]);
   const [cardList, setCardList] = useState([]);
+  const [cardCounts, setCardCounts] = useState({});
   const [cardNameError, setCardNameError] = useState(false);
   const [groupingOption, setGroupingOption] = useState('type');
   const [selectedCard, setSelectedCard] = useState(null);
@@ -62,9 +64,27 @@ const CardListCreator = () => {
   //   setCardList(updatedCardList);
   // };
 
-  const handleDeleteCard = (index) => {
-    const updatedCardList = cardList.filter((_, i) => i !== index);
+
+  const handleUpdateCardNumber = (card, newNumber) => {
+    setCardCounts(prevCounts => ({
+      ...prevCounts,
+      [card.name]: Math.max(1, parseInt(newNumber) || 1), // Store by card name
+    }));
+
+    // If you need to update the count in cardList itself, do this:
+    setCardList(prevList => prevList.map(c =>
+      c.name === card.name ? { ...c, number: Math.max(1, parseInt(newNumber) || 1) } : c
+    ));
+  };
+
+  const handleDeleteCard = (card) => { // Directly pass the card object
+    const updatedCardList = cardList.filter(c => c !== card); // Filter by card object
     setCardList(updatedCardList);
+    setCardCounts(prevCounts => {
+      const newCounts = { ...prevCounts };
+      delete newCounts[card.name]; // Remove count for deleted card
+      return newCounts;
+    });
   };
 
   useEffect(() => {
@@ -124,9 +144,9 @@ const CardListCreator = () => {
   const renderColorIdentityIcons = (colors) => {
     if (!colors || colors.length === 0) {
       return (
-      <Box sx={{ display: 'inline', alignItems: 'center', borderRadius: '50rem', marginLeft: '6px', backgroundColor: '#454545', color: '#ddd', paddingX: '6px', paddingY: '2px' }}>
+      <Typography sx={{ display: 'inline-block', borderRadius: '50rem', marginLeft: '6px', backgroundColor: '#454545', color: '#ddd', paddingX: '6px', paddingY: '2px' }}>
         <ColorlessIcon />
-      </Box>
+      </Typography>
       );
     }
 
@@ -137,16 +157,17 @@ const CardListCreator = () => {
       R: <MountainIcon />,
       G: <ForestIcon />,
       C: <ColorlessIcon />,
+      // S: <SnowIcon />,
     };
 
     return (
-      <Box sx={{ display: 'inline', alignItems: 'center', borderRadius: '1000px', marginLeft: '6px', backgroundColor: "#454545", paddingX: '6px', paddingY: '2px' }}>
+      <Typography sx={{ display: 'inline-block', borderRadius: '50rem', marginLeft: '6px', backgroundColor: "#454545", paddingX: '6px', paddingY: '4px' }}>
         {colors.map((colorCode, index) => (
           <span key={index} title={colorMap[colorCode]?.type || colorCode}>
             {colorMap[colorCode]}
           </span>
         ))}
-      </Box>
+      </Typography>
     );
   };
 
@@ -172,7 +193,7 @@ const CardListCreator = () => {
 
     setCardList([...cardList, {
       name: cardName,
-      count: cardCount,
+      number: cardNumber,
       type: cardType,
       color: colorToSave,
       landType: landType,
@@ -323,10 +344,6 @@ const CardListCreator = () => {
     saveAs(blob, 'card_list.csv');
   };
 
-  // const handleMulticolorChange = (event) => {
-  //   setCardColors({ ...cardColors, [event.target.name]: event.target.checked });
-  // };
-
   const groupCards = (cards, option) => {
     const groupedCards = {};
     cards.forEach(card => {
@@ -335,9 +352,9 @@ const CardListCreator = () => {
         case 'color':
           groupKey = card.color;
           break;
-        case 'card':
-          groupKey = card.name; // Group by card name
-          break;
+        // case 'count':
+        //   groupKey = card.count; // Group by card name
+        //   break;
         case 'type':
           groupKey = card.type;
           break;
@@ -409,8 +426,8 @@ const CardListCreator = () => {
                       label="Count"
                       type="number"
                       size="small"
-                      value={cardCount}
-                      onChange={e => setCardCount(Math.max(1, parseInt(e.target.value) || 1))} // Ensure at least 1
+                      value={cardNumber}
+                      onChange={e => setCardNumber(Math.max(1, parseInt(e.target.value) || 1))} // Ensure at least 1
                     />
                   </FormControl>
                 </Stack>
@@ -436,7 +453,7 @@ const CardListCreator = () => {
               >
                 <MenuItem value="type">Type</MenuItem>
                 <MenuItem value="color">Color</MenuItem>
-                <MenuItem value="count">Count</MenuItem>
+                {/* <MenuItem value="count">Count</MenuItem> */}
               </Select>
             </FormControl>
           </Grid2>
@@ -450,24 +467,30 @@ const CardListCreator = () => {
         </Grid2>
         <Card>
         <CardContent>
-          {/* ... Card List Header */}
           <Grid2 item xs={12}>
-          <List>
-              {Object.keys(groupedCardList).map(groupKey => (
+            <List>
+          {Object.keys(groupedCardList).map(groupKey => (
                 <List key={groupKey} subheader={
                   <ListSubheader><strong>{groupKey}</strong></ListSubheader>
                 }>
-                  {groupedCardList[groupKey].map((card, index) => (
-                    <ListItem key={index}
-                      secondaryAction={
-                        <IconButton edge="end" color="error" onClick={() => handleDeleteCard(cardList.indexOf(card))}>
+                  {groupedCardList[groupKey].map((card) => (
+                    <ListItem key={card.name}
+                      secondaryAction={[
+                        <TextField
+                          type="number"
+                          size="small"
+                          value={cardCounts[card.name] || card.number || 1}
+                          onChange={e => handleUpdateCardNumber(card, e.target.value)}
+                          sx={{ width: '60px', margin: '0 8px' }}
+                        />,
+                        <IconButton edge="end" color="error" onClick={() => handleDeleteCard(card)}>
                           <DeleteIcon />
                         </IconButton>
-                      }>
+                      ]}>
                       <ListItemAvatar>
                         <Avatar sx={{ width: 50, height: 50 }}>
                           <img
-                            src={card.scryfallData?.image_uris?.normal || 'placeholder_url'} // Provide a placeholder URL
+                            src={card.scryfallData?.image_uris?.normal || 'placeholder_url'}
                             alt={card.name}
                             style={{ objectFit: 'contain', width: '60px' }}
                           />
@@ -476,16 +499,20 @@ const CardListCreator = () => {
                       <ListItemText
                         primary={card.name}
                         secondary={[
-                          <Typography key="1" component="span" variant="subtitle2">
+                          <span key="1">
+                          <Typography component="span" variant="caption">
                             {card.type}
-                          </Typography>,
+                          </Typography>
+                          </span>,
                           card.scryfallData?.color_identity && (
-                            <React.Fragment key="2">{renderColorIdentityIcons(card.scryfallData?.color_identity)}</React.Fragment>
+                            <span key="2">{renderColorIdentityIcons(card.scryfallData?.color_identity)}</span>
                           ),
                           card.scryfallData?.produced_mana && (
-                            <Typography key="3" component="span" variant="caption" sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px' }} color="text.secondary">
-                              Produces: {renderColorIdentityIcons(card.scryfallData?.produced_mana)} {/* Use produced_mana here */}
+                            <span key="3">
+                            <Typography component="span" variant="caption" sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2px' }} color="text.secondary">
+                              Produces: {renderColorIdentityIcons(card.scryfallData?.produced_mana)}
                             </Typography>
+                            </span>
                           ),
                         ]}
                       />

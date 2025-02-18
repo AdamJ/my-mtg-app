@@ -24,7 +24,7 @@ export default function SwampIcon() {
   return (
     <ThemeProvider theme={manaIcon}>
       <Icon
-        className="ms-s"
+        className="ms-b"
       />
     </ThemeProvider>
   );
