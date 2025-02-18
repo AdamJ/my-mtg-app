@@ -5,7 +5,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { saveAs } from 'file-saver';
 import localForage from 'localforage';
-import MyAlert from './MyAlerts';
+import MyAlert from './notifications/MyAlerts';
 // import cardDataLocal from 'https://api.scryfall.com/bulk-data/oracle-cards';
 import ForestIcon from './icons/ForestIcon';
 import IslandIcon from './icons/IslandIcon';
@@ -508,7 +508,7 @@ const CardListCreator = () => {
         <CardContent>
           <Grid2 item xs={12}>
             <List>
-          {Object.keys(groupedCardList).map(groupKey => (
+              {Object.keys(groupedCardList).map(groupKey => (
                 <List key={groupKey} subheader={
                   <ListSubheader component="div" id={groupKey}>{groupKey}</ListSubheader>
                 }>

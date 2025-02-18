@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PageTemplate from './PageTemplate'; // Adjust path if needed
+import PageTemplate from './templates/PageTemplate'; // Adjust path if needed
 import { List, ListItem, ListItemText } from '@mui/material'; // Import Alert and AlertTitle
 import VersionDialog from './VersionDialog'; // Import dialog component
 import packageJson from '../../package.json'; // No require!

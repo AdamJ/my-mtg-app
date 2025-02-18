@@ -37,6 +37,7 @@ export default defineConfig({
       },
       // add this to cache all the static assets
       includeAssets: [
+        'favicon.svg',
         'favicon.ico',
         'apple-touch-icon-180x180.png',
         'maskable-icon-512x512.png',

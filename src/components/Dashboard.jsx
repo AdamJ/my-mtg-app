@@ -1,7 +1,7 @@
 // src/pages/About.jsx  (or src/About.jsx)
 import React from 'react';
 import Link from '@mui/material/Link';
-import PageTemplate from './PageTemplate'; // Adjust path if needed
+import PageTemplate from '../components/templates/PageTemplate'; // Adjust path if needed
 
 function About() {
   const apiUrl = import.meta.env.MODE === 'production'

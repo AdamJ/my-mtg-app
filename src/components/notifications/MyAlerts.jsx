@@ -45,8 +45,7 @@ const MyAlert = () => {
         }
       >
         <AlertTitle>Heads Up!</AlertTitle>
-        Scryfall integrations are a work in progress. If the Card Type or Color is
-        incorrect, you may change it before adding the card to your deck list.
+        Scryfall integrations are a work in progress. At this time, specific versions of a card are not available for selection.
       </Alert>
 
       {/* Optional Snackbar feedback */}
