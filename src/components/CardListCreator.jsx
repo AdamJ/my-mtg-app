@@ -6,7 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { saveAs } from 'file-saver';
 import localForage from 'localforage';
 import MyAlert from './MyAlerts';
-import cardDataLocal from '../assets/card_data.json';
+// import cardDataLocal from 'https://api.scryfall.com/bulk-data/oracle-cards';
 import ForestIcon from './icons/ForestIcon';
 import IslandIcon from './icons/IslandIcon';
 import PlainsIcon from './icons/PlainsIcon';
@@ -19,11 +19,11 @@ localForage.config({
   name: 'scryfallOracleCardsCache' // Distinct name for oracle cards
 });
 
-const api = axios.create({
-  baseURL: import.meta.env.MODE === 'production'
-    ? import.meta.env.VITE_API_URL || "https://api.scryfall.com/bulk-data/oracle-cards" // Production URL
-    : import.meta.env.VITE_API_URL || "./src/assets/card_data.json" // Development URL
-});
+// const api = axios.create({
+//   baseURL: import.meta.env.MODE === 'production'
+//     ? import.meta.env.VITE_API_URL || "https://api.scryfall.com/bulk-data/oracle-cards" // Production URL
+//     : import.meta.env.VITE_API_URL || "./src/assets/card_data.json" // Development URL
+// });
 
 const CardListCreator = () => {
 
@@ -101,44 +101,45 @@ const CardListCreator = () => {
     saveCardList();
   }, [cardList]);
 
-  useEffect(() => {
-    setLoading(true);
-    try {
-      const cardDataByName = {};
-      const nameOptions = new Set();
-      const uniqueCardColors = new Set();
+  // Local card_data.json
+  // useEffect(() => {
+  //   setLoading(true);
+  //   try {
+  //     const cardDataByName = {};
+  //     const nameOptions = new Set();
+  //     const uniqueCardColors = new Set();
 
-      cardDataLocal.forEach(card => {
-        cardDataByName[card.name] = card;
-        nameOptions.add(card.name);
+  //     cardDataLocal.forEach(card => {
+  //       cardDataByName[card.name] = card;
+  //       nameOptions.add(card.name);
 
-        if (card.type_line) {
-          card.type_line.split("—")[0].trim().split(" ").forEach;
-        }
+  //       if (card.type_line) {
+  //         card.type_line.split("—")[0].trim().split(" ").forEach;
+  //       }
 
-        if (card.colors) {
-          if (card.colors.length === 0) {
-            uniqueCardColors.add("Colorless");
-          } else if (card.colors.length === 1) {
-            const colorMap = { W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green' };
-            uniqueCardColors.add(colorMap[card.colors[0]] || "Unknown");
-          } else {
-            uniqueCardColors.add("Multicolor");
-          }
-        } else {
-          uniqueCardColors.add("Colorless");
-        }
-      });
+  //       if (card.colors) {
+  //         if (card.colors.length === 0) {
+  //           uniqueCardColors.add("Colorless");
+  //         } else if (card.colors.length === 1) {
+  //           const colorMap = { W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green' };
+  //           uniqueCardColors.add(colorMap[card.colors[0]] || "Unknown");
+  //         } else {
+  //           uniqueCardColors.add("Multicolor");
+  //         }
+  //       } else {
+  //         uniqueCardColors.add("Colorless");
+  //       }
+  //     });
 
-      setCardData(cardDataByName);
-      setCardNameOptions(Array.from(nameOptions));
+  //     setCardData(cardDataByName);
+  //     setCardNameOptions(Array.from(nameOptions));
 
-    } catch (error) {
-      console.error("Error loading card data from local JSON:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  //   } catch (error) {
+  //     console.error("Error loading card data from local JSON:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
 
   useEffect(() => {
     const loadCardData = async () => {
@@ -152,10 +153,10 @@ const CardListCreator = () => {
           setCardNameOptions(storedCardNames);
           console.log("Loaded oracle card data from IndexedDB");
         } else {
-          const response = await api.get('https://api.scryfall.com/bulk-data/oracle-cards');
+          const response = await axios.get('https://api.scryfall.com/bulk-data/oracle-cards');
           const bulkDataUrl = response.data.download_uri; // Correct path for oracle-cards
 
-          const cardDataResponse = await api.get(bulkDataUrl);
+          const cardDataResponse = await axios.get(bulkDataUrl);
           const allCards = cardDataResponse.data;
 
           const cardDataByName = {};
