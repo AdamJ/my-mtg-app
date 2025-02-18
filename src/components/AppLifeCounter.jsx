@@ -1,11 +1,8 @@
 // App.js
 import React, { useState, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Card, Chip, TextField, Grid2, IconButton, Stack, List, ListItem, ListItemText } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, ButtonGroup, Card, Chip, Grid2, IconButton, List, ListItem, ListItemText, Stack, TextField } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import { Edit, Delete } from '@mui/icons-material'; // Import icons
+import { Delete, Edit } from '@mui/icons-material'; // Import icons
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
@@ -26,8 +23,10 @@ function AppLifeCounter() {
   const theme = useTheme();
   const getChipStyle = (count) => {
     return {
-      ...(count < 10 && { backgroundColor: theme.palette.warning.dark, color: theme.palette.common.white }),
-      ...(count < 5 && { backgroundColor: theme.palette.error.main, color: theme.palette.common.white }),
+      ...( count >= 11 && { backgroundColor: theme.palette.primary.dark, color: theme.palette.common.white }),
+      ...(count > 20 && { backgroundColor: theme.palette.success.dark, color: theme.palette.common.white }),
+      ...(count <= 10 && { backgroundColor: theme.palette.warning.dark, color: theme.palette.common.white }),
+      ...(count <= 5 && { backgroundColor: theme.palette.error.main, color: theme.palette.common.white }),
     };
   };
 
@@ -124,18 +123,11 @@ function AppLifeCounter() {
     <Box sx={{
         flexGrow: 1,
         marginBottom: 10,
-        // display: "flex",
-        // alignItems: "center",
-        // border: "1px solid",
-        // borderColor: "primary.main",
-        // bgcolor: "background.paper",
-        // color: "text.primary",
       }}>
       <Grid2 container spacing={{ xs: 2, md: 3 }} columns={{ xs: 1, sm: 2, md: 12}}>
         {/* Player 2 */}
         <Grid2 size={6} sx={{
-          // padding: 2,
-          transition: 'transform 0.3s ease', // Add a transition for smooth rotation
+          transition: 'transform 0.3s ease',
           '@media (orientation: portrait)': {
             transform: 'rotate(180deg)', // Rotate 180 degrees in portrait
             '& .MuiCard-root': {
@@ -144,27 +136,9 @@ function AppLifeCounter() {
             '& .MuiStack-root': {
               transform: 'rotate(180deg)',  // Rotate the Stack content back
             },
-            // '& .MuiChip-root': {
-              //     transform: 'rotate(180deg)',  // Rotate the Chip content back
-              // },
-              // '& .MuiButton-root': {
-                //     transform: 'rotate(180deg)',  // Rotate the Button content back
-                // },
           },
           '@media (orientation: landscape)': {
             transform: 'rotate(180deg)', // Reset rotation in landscape
-                // '& .MuiCard-root': {
-                  //     transform: 'rotate(180deg)',  // Rotate the Card content back
-                  // },
-                  // '& .MuiStack-root': {
-                    //     transform: 'rotate(180deg)',  // Rotate the Stack content back
-                    // },
-                    // '& .MuiChip-root': {
-                      //     transform: 'rotate(180deg)',  // Rotate the Chip content back
-                      // },
-                      // '& .MuiButton-root': {
-                        //     transform: 'rotate(180deg)',  // Rotate the Button content back
-                        // },
           },
           '@media screen and (min-width: 600px)': {
             transform: 'rotate(0deg)',
@@ -182,7 +156,7 @@ function AppLifeCounter() {
                 <i className="ms ms-counter-plus"></i>&nbsp;
                 Gain A Life
               </Button>
-              <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer2}`} size="large" style={getChipStyle(countPlayer2)} />
+              <Chip color="info" icon={<i className="ms ms-toughness"></i>} label={`${countPlayer2}`} size="large" style={getChipStyle(countPlayer2)} />
               <Button color="error" variant="outlined" aria-label="Remove one from player 2" sx={{padding: 2}} onClick={() => updateLife(2, -1)}>
                 <i className="ms ms-counter-minus"></i>&nbsp;
                 Lose A Life
@@ -204,7 +178,7 @@ function AppLifeCounter() {
                 <i className="ms ms-counter-plus"></i>&nbsp;
                 Gain a life
               </Button>{' '}
-              <Chip icon={<i className="ms ms-toughness"></i>} label={`${countPlayer1}`} size="large" style={getChipStyle(countPlayer1)} />
+              <Chip color="info" icon={<i className="ms ms-toughness"></i>} label={`${countPlayer1}`} size="large" style={getChipStyle(countPlayer1)} />
               <Button color="error" variant="outlined" aria-label="Remove one from player 1" sx={{padding: 2}} onClick={() => updateLife(1, -1)}>
                 <i className="ms ms-counter-minus"></i>&nbsp;
                 Lose a life
@@ -227,9 +201,9 @@ function AppLifeCounter() {
               marginY: 2,
             }}
           >
-            <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName2)} size="medium">Winner</Button>
-            <Button variant="outlined" color="warning" sx={{ paddingX: 10 }} onClick={() => handleMatchEnd("Draw")} size="medium">Draw</Button> {/* Pass "Draw" as string */}
-            <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName1)} size="medium">Winner</Button>
+            <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} endIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName2)} size="medium">Winner</Button>
+            <Button variant="contained" color="warning" sx={{ paddingX: 10 }} onClick={() => handleMatchEnd("Draw")} size="medium">Draw</Button> {/* Pass "Draw" as string */}
+            <Button variant="contained" color="primary" startIcon={<i className="ms ms-power"></i>} endIcon={<i className="ms ms-power"></i>} onClick={() => handleMatchEnd(playerName1)} size="medium">Winner</Button>
           </Stack>
         </Grid2>
       </Grid2>

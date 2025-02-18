@@ -50,8 +50,9 @@ function App() {
                 props: { size: 'large' },
                 style: {
                   height: 80,
-                  fontSize: 24,
+                  fontSize: 36,
                   fontWeight: 700,
+                  boxShadow: '0px -0.5px 2px 0px rgba(255, 255, 255, 0.30) inset, 0px -0.5px 2px 0px rgba(255, 255, 255, 0.25) inset, 0px 1.5px 8px 0px rgba(0, 0, 0, 0.08) inset, 0px 1.5px 8px 0px rgba(0, 0, 0, 0.10) inset',
                 }
               }
             ],
@@ -101,7 +102,7 @@ function App() {
               main: '#B71C1C',
             },
             warning: {
-              main: '#FF6F00',
+              main: '#FFC107',
             },
             info: {
               main: '#0091EA',
@@ -124,7 +125,7 @@ function App() {
               main: '#78909c',
             },
             error: {
-              main: '#E57373',
+              main: '#B71C1C',
             },
             warning: {
               main: '#ffca28',

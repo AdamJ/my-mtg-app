@@ -79,6 +79,12 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+    external: [
+      new RegExp('src/assets/card_data.json')
+    ]},
+  },
   server: {
     port: 7150,
     host: true,

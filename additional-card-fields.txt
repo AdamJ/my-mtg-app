@@ -1,0 +1,70 @@
+import MyColorPicker from './MyColorPicker';
+<Grid2 container spacing={{ xs: 2 }} sx={{ paddingTop: 2 }}>
+  <Grid2 item spacing={2} size={{ xs: 12, md: 6 }}>
+    <Stack direction="row" spacing={2}>
+    {loading ? ( // Show a loading indicator while data is loading
+      <CircularProgress /> // Or any other loading indicator you prefer
+      ) : ( // Render the Selects ONLY after loading is complete
+        <FormControl sx={{ minWidth: 175 }} size="small" fullWidth disabled={!cardName}>
+          <InputLabel id="card-type">Card Type</InputLabel>
+          <Select
+            labelId="card-type"
+            id="card-type-select"
+            value={cardType}
+            label="Type"
+            onChange={e => setCardType(e.target.value)}
+            displayEmpty
+          >
+          <MenuItem value=""></MenuItem>
+          {cardTypes.map(type => (
+            <MenuItem key={type} value={type}>
+              {type}
+            </MenuItem>
+          ))}
+          </Select>
+        </FormControl>
+      )}
+      /* Automatically selected by Scryfall
+      {cardType === 'Land' && (
+      <FormControl sx={{ marginLeft: 1, minWidth: 175 }} size="small" fullWidth disabled>
+        <InputLabel id="land-type-label">Land Type</InputLabel>
+        <Select
+          labelId="land-type-label"
+          id="land-type-select"
+          value={landType} // Value MUST be a valid option
+          label="Land Type"
+          onChange={e => setLandType(e.target.value)}
+        >
+          <MenuItem value=""></MenuItem>
+          {landTypeOptions.map(type => (
+            <MenuItem key={type} value={type}>{type}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      )}
+    </Stack>
+  </Grid2>
+  /* Color select
+  <Grid2 item size={{ xs: 12, md: 6 }}>
+    <Stack direction="row" spacing={2}>
+      <FormControl sx={{ minWidth: 100 }} size="small" fullWidth disabled>
+        <InputLabel id="color-label">Color</InputLabel>
+        <Select
+          labelId="color-label"
+          id="color-select"
+          value={cardColor}
+          label="Color"
+          onChange={e => setCardColor(e.target.value)}
+        >
+          <MenuItem value=""></MenuItem>
+          {cardColorOptions.map(color => (
+            <MenuItem key={color} value={color}>
+              {color}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+        <MyColorPicker cardColors={cardColors} setCardColors={setCardColors} />
+    </Stack>
+  </Grid2>
+</Grid2>
