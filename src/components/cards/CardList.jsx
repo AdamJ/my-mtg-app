@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { Autocomplete, Avatar, Box, Button, Card, CardContent, CircularProgress, FormControl, Grid2, IconButton, InputLabel, List, ListItem, ListSubheader, ListItemAvatar, ListItemText, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Avatar, Card, CardContent, Grid2, IconButton, List, ListItem, ListSubheader, ListItemAvatar, ListItemText, TextField, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const CardList = () => {
+  const [cardCounts, setCardCounts] = useState({});
+
+  // eslint-disable-next-line no-unused-vars
   const [cardList, setCardList] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [groupingOption, setGroupingOption] = useState('type');
   const groupCards = (cards, option) => {
     const groupedCards = {};
@@ -27,6 +32,21 @@ const CardList = () => {
     return groupedCards;
   };
 
+  const handleUpdateCardNumber = (card, value) => {
+    setCardCounts(prevCounts => ({
+      ...prevCounts,
+      [card.name]: value
+    }));
+  };
+
+  const handleDeleteCard = (card) => {
+    // Implement your delete logic here
+    console.log('Delete card:', card);
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const renderColorIdentityIcons = (colorIdentity) => { return null; };
+
   const groupedCardList = groupCards(cardList, groupingOption);
   return (
     <Card>
@@ -44,7 +64,7 @@ const CardList = () => {
                         key="1"
                         type="number"
                         size="small"
-                        value={cardCounts[card.name] || card.number || 1}
+                        value={cardCounts[card.name] || 1}
                         onChange={e => handleUpdateCardNumber(card, e.target.value)}
                         sx={{ width: '60px', margin: '0 8px' }}
                       />,

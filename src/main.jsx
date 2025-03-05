@@ -64,12 +64,12 @@ function showUpdateNotification(registration) {
 
 }
 
-const request = indexedDB.open('myDataBase', 1); // Version 1
+// const request = indexedDB.open('myDataBase', 1); // Version 1
 
-request.onsuccess = event => {
-  const db = event.target.result;
-  // ... use the db object to store/retrieve data
-};
+// request.onsuccess = event => {
+//   // const db = event.target.result;
+//   // ... use the db object to store/retrieve data
+// };
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
