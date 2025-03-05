@@ -1,0 +1,103 @@
+{
+  "id": "/",
+  "scope": "/my-mtg-app/",
+  "url": "/my-mtg-app/",
+  "name": "MTG Life Counter and Deck List",
+  "display": "standalone",
+  "start_url": "/my-mtg-app/",
+  "short_name": "MyMTGApp",
+  "theme_color": "#171717",
+  "description": "A Magic: The Gathering life counter and deck list app.",
+  "orientation": "any",
+  "background_color": "#fff",
+  "dir": "auto",
+  "lang": "en",
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "display_override": [
+    "window-controls-overlay",
+    "minimal-ui",
+    "standalone"
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "icons": [
+    {
+      "src": "./pwa-64x64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "./pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./apple-touch-icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "./favicon.ico",
+      "type": "image/ico"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/screenshots/screen.png",
+      "sizes": "1617x1012",
+      "type": "image/png"
+    }
+  ],
+  "features": [
+    "Cross Platform",
+    "fast",
+    "simple"
+  ],
+  "categories": [
+    "games",
+    "utilities"
+  ],
+  "shortcuts": [
+    {
+      "name": "My MTG App",
+      "short_name": "MyMTGApp",
+      "description": "My MTG App",
+      "url": "",
+      "icons": [{ "src": "assets/icons/192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "widgets": [
+    {
+      "name": "My MTG App",
+      "tag": "MyMTGApp",
+      "ms_ac_template": "widget/ac.json",
+      "data": "widget/data.json",
+      "description": "A simple widget example from pwa-starter.",
+      "screenshots": [
+        {
+          "src": "assets/screenshots/widget-screen.png",
+          "sizes": "500x500",
+          "label": "Widget screenshot"
+        }
+      ],
+      "icons": [
+        {
+          "src": "assets/icons/48x48.png",
+          "sizes": "48x48"
+        }
+      ]
+    }
+  ]
+}

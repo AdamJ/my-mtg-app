@@ -206,10 +206,10 @@ function App() {
                   setValue(newValue);
                 }}
               >
-                <BottomNavigationAction icon={<Icon baseClassName="ms ms-ability-d20"></Icon>} component={Link} to="/my-mtg-app/dashboard" />
-                <BottomNavigationAction icon={<Icon baseClassName="ms ms-20"></Icon>} component={Link} to="/my-mtg-app/life-counter" />
-                <BottomNavigationAction icon={<Icon baseClassName="ms ms-ability-copy"></Icon>} component={Link} to="/my-mtg-app/card-list" />
-                <BottomNavigationAction icon={<Icon baseClassName="ms ms-tap"></Icon>} component={Link} to="/my-mtg-app/info" />
+                <BottomNavigationAction icon={<Icon baseClassName="ms ms-ability-d20"></Icon>} component={Link} to="/my-mtg-app/dashboard" aria-label="Navigate to Dashboard" />
+                <BottomNavigationAction icon={<Icon baseClassName="ms ms-20"></Icon>} component={Link} to="/my-mtg-app/life-counter" aria-label="Navigate to Life Counter" />
+                <BottomNavigationAction icon={<Icon baseClassName="ms ms-ability-copy"></Icon>} component={Link} to="/my-mtg-app/card-list" aria-label="Navigate to Card List" />
+                <BottomNavigationAction icon={<Icon baseClassName="ms ms-tap"></Icon>} component={Link} to="/my-mtg-app/info" aria-label="Navigate to Info" />
               </BottomNavigation>
             </Paper>
           </Box>

@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/my-mtg-app/sw.js', { scope: '/my-mtg-app/' })})}

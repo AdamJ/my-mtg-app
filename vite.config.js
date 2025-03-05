@@ -6,16 +6,27 @@ import dotenv from 'dotenv';
 dotenv.config(); // Load environment variables from .env files
 
 export default defineConfig({
-  define: {
-    __APP_API_URL__: JSON.stringify("https://api.scryfall.com/bulk-data/oracle-cards"), // Use a placeholder, NOT process.env
-  },
+  // define: {
+  //   __APP_API_URL__: JSON.stringify("https://api.scryfall.com/bulk-data/oracle-cards"), // Use a placeholder, NOT process.env
+  // },
   appType: 'spa',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      devOptions: { enabled: true },
-      injectRegister: 'auto',
+      devOptions: {
+        enabled: true
+      },
+      injectManifest: {
+        swSrc: 'public/service-worker.js',
+        swDest: 'dist/service-worker.js',
+        globDirectory: 'dist',
+        globPatterns: [
+          '**/*.{js,css,json,html,ico,png,svg}',
+        ],
+      },
+      injectRegister: null,
+      manifest: false,
       workbox: {
         runtimeCaching: [
           {
@@ -33,7 +44,7 @@ export default defineConfig({
             },
           },
         ],
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        cleanupOutdatedCaches: true,
       },
       // add this to cache all the static assets
       includeAssets: [
@@ -48,20 +59,6 @@ export default defineConfig({
         'tap-icon.svg',
         'tap-icon.png',
       ],
-      manifest: {
-        name: 'MTG Life Counter and Deck List',
-        short_name: 'MTG Life',
-        description: 'A Magic: The Gathering life counter and deck list app.',
-        theme_color: '#171717',
-        icons: [
-          { src: './pwa-64x64.png', sizes: '64x64', type: 'image/png' },
-          { src: './pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: './pwa-512x512.png', sizes: '512x512', type: 'image/png' },
-          { src: './maskable-icon-512x512.png', sizes: '512x512', type: 'image/png' },
-          { src: './apple-touch-icon-180x180.png', sizes: '180x180', type: 'image/png' },
-          { src: './favicon.ico', type: 'image/ico' },
-        ],
-      },
     }),
   ],
   build: {
@@ -88,5 +85,6 @@ export default defineConfig({
     host: true,
     https: false,
   },
+  publicDir: 'public',
   base: '/my-mtg-app/',
 });

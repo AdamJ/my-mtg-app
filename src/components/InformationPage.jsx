@@ -45,7 +45,7 @@ function InformationPage() {
               <ListItem key={index}>
                 <ListItemText
                   primary={`Version: ${versionEntry.version}`}
-                  secondary={versionEntry.date ? `Date: ${versionEntry.date}` : null}
+                  // secondary={versionEntry.date ? `Date: ${versionEntry.date}` : null}
                 />
               </ListItem>
             ))}
