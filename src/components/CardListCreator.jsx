@@ -5,7 +5,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { saveAs } from 'file-saver';
 import localForage from 'localforage';
-import MyAlert from './MyAlerts';
+import MyAlert from './notifications/MyAlerts';
 // import cardDataLocal from 'https://api.scryfall.com/bulk-data/oracle-cards';
 import ForestIcon from './icons/ForestIcon';
 import IslandIcon from './icons/IslandIcon';
@@ -101,6 +101,57 @@ const CardListCreator = () => {
     saveCardList();
   }, [cardList]);
 
+  useEffect(() => {
+    const fetchDataMonthly = async () => {
+      setLoading(true);
+      try {
+        const lastFetchDate = await localForage.getItem('lastScryfallFetchDate');
+        const currentDate = new Date();
+
+        if (lastFetchDate) {
+          const lastFetch = new Date(lastFetchDate);
+          if (currentDate.getMonth() === lastFetch.getMonth() && currentDate.getFullYear() === lastFetch.getFullYear()) {
+            // Already fetched this month, load from localForage
+            const storedCardData = await localForage.getItem('scryfallOracleCardData');
+            const storedCardNames = await localForage.getItem('scryfallOracleCardNames');
+            if(storedCardData && storedCardNames){
+              setCardData(storedCardData);
+              setCardNameOptions(storedCardNames);
+              setLoading(false);
+              return;
+            }
+          }
+        }
+
+        const response = await axios.get('https://api.scryfall.com/bulk-data/oracle-cards');
+        const bulkDataUrl = response.data.download_uri;
+
+        const cardDataResponse = await axios.get(bulkDataUrl);
+        const allCards = cardDataResponse.data;
+
+        const cardDataByName = {};
+        const nameOptions = new Set();
+        allCards.forEach(card => {
+          cardDataByName[card.name] = card;
+          nameOptions.add(card.name);
+        });
+
+        await localForage.setItem('scryfallOracleCardData', cardDataByName);
+        await localForage.setItem('scryfallOracleCardNames', Array.from(nameOptions));
+        await localForage.setItem('lastScryfallFetchDate', currentDate.toISOString());
+
+        setCardData(cardDataByName);
+        setCardNameOptions(Array.from(nameOptions));
+      } catch (error) {
+        console.error("Error fetching or loading oracle card data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDataMonthly();
+  }, []);
+
   // Local card_data.json
   // useEffect(() => {
   //   setLoading(true);
@@ -187,7 +238,7 @@ const CardListCreator = () => {
     if (!colors || colors.length === 0) {
       return (
       <span>
-      <Typography sx={{ display: 'inline-block', borderRadius: '50rem', marginLeft: '6px', backgroundColor: '#454545', color: '#ddd', paddingX: '6px', paddingY: '2px' }}>
+      <Typography component="span" sx={{ display: 'inline-block', borderRadius: '50rem', marginLeft: '6px', backgroundColor: '#454545', color: '#ddd', paddingX: '6px', paddingY: '2px' }}>
         <ColorlessIcon />
       </Typography>
       </span>
@@ -206,9 +257,9 @@ const CardListCreator = () => {
 
     return (
       <span>
-      <Typography sx={{ display: 'inline-block', borderRadius: '50rem', marginLeft: '6px', backgroundColor: "#454545", color: '#ddd', paddingX: '6px', paddingY: '4px' }}>
+      <Typography component="span" sx={{ display: 'inline-block', borderRadius: '50rem', marginLeft: '6px', backgroundColor: "#454545", color: '#ddd', paddingX: '6px', paddingY: '4px' }}>
         {colors.map((colorCode, index) => (
-          <span key={index} title={colorMap[colorCode]?.type || colorCode}>
+          <span key={index} aria-label={colorMap[colorCode]?.type || colorCode}>
             {colorMap[colorCode]}
           </span>
         ))}
@@ -508,7 +559,7 @@ const CardListCreator = () => {
         <CardContent>
           <Grid2 item xs={12}>
             <List>
-          {Object.keys(groupedCardList).map(groupKey => (
+              {Object.keys(groupedCardList).map(groupKey => (
                 <List key={groupKey} subheader={
                   <ListSubheader component="div" id={groupKey}>{groupKey}</ListSubheader>
                 }>

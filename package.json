@@ -6,36 +6,13 @@
   "type": "module",
   "versionHistory": [
     {
-      "version": "0.6.1",
-      "date": "2025-02-18"
+      "version": "0.7.0",
+      "date": "March 2025"
     },
     {
-      "version": "0.6.0",
-      "date": "2025-02-18"
-    },
-    {
-      "version": "0.5.0",
-      "date": "2025-02-18"
-    },
-    {
-      "version": "0.4.0",
-      "date": "2025-02-12"
-    },
-    {
-      "version": "0.3.0",
-      "date": "2025-02-11"
-    },
-    {
-      "version": "0.2.0",
-      "date": "2025-02-10"
-    },
-    {
-      "version": "0.1.1",
-      "date": "2025-02-10"
-    },
-    {
-      "version": "0.1.0",
-      "date": "2025-02-10"
+      "version": "Previous",
+      "date": "",
+      "url": "https://github.com/AdamJ/my-mtg-app/releases"
     }
   ],
   "scripts": {

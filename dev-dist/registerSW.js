@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/my-mtg-app/dev-sw.js?dev-sw', { scope: '/my-mtg-app/', type: 'classic' })
