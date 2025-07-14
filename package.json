@@ -2,12 +2,12 @@
   "name": "my-mtg-app",
   "homepage": "/my-mtg-app/",
   "private": true,
-  "version": "0.6.1",
+  "version": "0.7.1",
   "type": "module",
   "versionHistory": [
     {
-      "version": "0.7.0",
-      "date": "March 2025"
+      "version": "0.7.1",
+      "date": "July 2025"
     },
     {
       "version": "Previous",
