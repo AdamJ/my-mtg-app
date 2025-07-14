@@ -6,6 +6,8 @@ name: Node.js Package
 on:
   release:
     types: [created]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -14,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - run: npm ci
       - run: npm run lint
 
@@ -28,7 +30,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://npm.pkg.github.com/
       - run: npm ci
       - run: npm run build
