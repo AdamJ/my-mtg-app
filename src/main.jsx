@@ -8,7 +8,7 @@ console.log('API_URL:', import.meta.env.VITE_API_URL);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/public/service-worker.js', { scope: '/my-mtg-app/' })  // Path to your SW file
+    navigator.serviceWorker.register('/my-mtg-app/sw.js')  // Path to your SW file
       .then(registration => {
         console.log('Service Worker registered:', registration);
 
